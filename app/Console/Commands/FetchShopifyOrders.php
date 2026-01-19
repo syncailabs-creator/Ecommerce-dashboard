@@ -108,7 +108,6 @@ class FetchShopifyOrders extends Command
                 }
             }
         }
-
         // Store or update ShopifyOrder
         // Using order_id as the unique identifier
         $order = ShopifyOrder::updateOrCreate(
@@ -121,7 +120,7 @@ class FetchShopifyOrders extends Command
                 'utm_content' => $utmContent,
                 'utm_campaign' => $utmCampaign,
                 'tags' => $data['tags'],
-                'created_date' => isset($data['created_at']) ? Carbon::parse($data['created_at']) : null,
+                'order_date' => isset($data['created_at']) ? Carbon::parse($data['created_at']) : null,
             ]
         );
 
@@ -143,9 +142,10 @@ class FetchShopifyOrders extends Command
                     'shopify_order_id' => $order->id, // Linking to our local ID
                     'name' => $item['name'],
                     'price' => $item['price'],
-                    'created_date' => now(), // Or from order?
+                    'created_at' => now(), // Or from order?
                 ]);
             }
         }
+        dd($data);
     }
 }
