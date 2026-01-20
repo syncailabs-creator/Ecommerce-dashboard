@@ -1,15 +1,16 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+        <h2 class="font-semibold text-xl text-slate-800 leading-tight">
             {{ __('Dashboard') }}
         </h2>
     </x-slot>
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900 dark:text-gray-100">
-                    {{ __("You're logged in!") }}
+            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg border-l-4 border-primary-500">
+                <div class="p-6 text-slate-800">
+                    <h3 class="text-lg font-bold mb-2 text-primary-700">Welcome back, {{ Auth::user()->name }}!</h3>
+                    <p class="text-slate-600">You are logged in to the Dr. Veda Ecommerce Dashboard.</p>
                 </div>
             </div>
         </div>

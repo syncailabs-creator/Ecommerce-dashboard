@@ -1,3 +1,74 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer components {
+
+    /* Custom DataTable Styling - Dr. Veda Soft Theme */
+    /* Control Bar Spacing */
+    .dataTables_wrapper {
+        @apply relative pb-4;
+    }
+
+    .dataTables_wrapper .dataTables_length {
+        @apply float-left mb-6 mt-1;
+    }
+
+    .dataTables_wrapper .dataTables_filter {
+        @apply float-right mb-6;
+    }
+
+    /* Custom Select Dropdown with Chevron */
+    .dataTables_wrapper .dataTables_length select {
+        @apply appearance-none text-slate-700 font-medium border border-slate-200 rounded-lg py-1.5 pl-3 pr-8 bg-slate-50 hover:bg-white focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none transition-all duration-200 cursor-pointer;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23475569' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+        background-position: right 0.5rem center;
+        background-repeat: no-repeat;
+        background-size: 1.5em 1.5em;
+    }
+
+    /* Search Input Styling */
+    .dataTables_wrapper .dataTables_filter label {
+        @apply font-medium text-slate-500 text-sm flex items-center gap-2;
+    }
+
+    .dataTables_wrapper .dataTables_filter input {
+        @apply ml-0 text-slate-700 border border-slate-200 rounded-lg py-1.5 px-4 bg-slate-50 hover:bg-white focus:bg-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none transition-all duration-200 w-64 shadow-sm;
+        margin-left: 0.5rem !important;
+        /* Override standard DataTable inline style if present */
+    }
+
+    table.dataTable {
+        @apply w-full border-separate border-spacing-0 border border-slate-200 rounded-xl overflow-hidden !important;
+    }
+
+    table.dataTable thead th {
+        @apply bg-primary-50 text-primary-700 font-bold uppercase text-xs tracking-wide py-4 px-6 border-b-2 border-primary-100 !important;
+    }
+
+    table.dataTable tbody td {
+        @apply border-b border-slate-100 py-4 px-6 text-slate-700 text-sm align-middle !important;
+    }
+
+    table.dataTable tbody tr:last-child td {
+        @apply border-b-0;
+    }
+
+    table.dataTable tbody tr:hover {
+        @apply bg-slate-50/50;
+    }
+
+    /* Pagination Buttons */
+    .dataTables_wrapper .dataTables_paginate .paginate_button {
+        @apply rounded-lg border border-transparent px-3 py-1.5 text-sm mx-0.5 !important;
+    }
+
+    .dataTables_wrapper .dataTables_paginate .paginate_button.current,
+    .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+        @apply bg-primary-500 text-white border-primary-500 font-semibold !important;
+    }
+
+    .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+        @apply bg-primary-50 text-primary-700 border-primary-100 !important;
+    }
+}
