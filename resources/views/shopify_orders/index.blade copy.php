@@ -16,36 +16,28 @@
         <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
             
             <!-- Hero Header -->
-            <!-- Hero Header -->
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden mb-6">
-                <div class="p-4 bg-white border-b border-slate-50 relative overflow-hidden">
+            <!-- <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden mb-6">
+                <div class="p-6 sm:p-8 bg-white border-b border-slate-50 relative overflow-hidden">
                     <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
                         <div>
                             <h1 class="text-3xl font-bold tracking-tight text-slate-900 mb-2">
                                 Shopify Orders
                             </h1>
-                            <!-- <p class="text-slate-500 text-sm max-w-2xl">
+                            <p class="text-slate-500 text-sm max-w-2xl">
                                 Manage and track all your incoming orders from Shopify in one place. Filter by status, date, or order ID to find exactly what you need.
-                            </p> -->
+                            </p>
                         </div>
-                        <div class="hidden md:flex items-center gap-3">
-                             <!-- <div class="inline-flex items-center gap-2 px-4 py-2 bg-slate-50 rounded-lg border border-slate-100 text-slate-600 text-sm font-medium">
+                        <div class="hidden md:block">
+                             <div class="inline-flex items-center gap-2 px-4 py-2 bg-slate-50 rounded-lg border border-slate-100 text-slate-600 text-sm font-medium">
                                 <svg class="w-5 h-5 text-primary-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
                                 </svg>
                                 <span>Real-time Sync</span>
-                             </div> -->
-
-                             <button onclick="exportOrders()" class="inline-flex items-center gap-2 px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-sm font-medium transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-900">
-                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                                </svg>
-                                <span>Export CSV</span>
-                             </button>
+                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> -->
 
             <!-- Data Table Card -->
             <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
@@ -248,27 +240,6 @@
         });
         
       });
-
-      function exportOrders() {
-        // Build the query string based on current input values
-        var searchParams = new URLSearchParams();
-        
-        // We need to find the inputs in the ACTUAL header that has .filters class
-        var $filters = $('.data-table thead tr.filters');
-
-        $filters.find('th').each(function(index) {
-            var $input = $(this).find('input, select');
-            if ($input.length > 0) {
-                var val = $input.val();
-                if (val) {
-                     // index corresponds to column index
-                    searchParams.append('columns[' + index + '][search][value]', val);
-                }
-            }
-        });
-
-        window.location.href = "{{ route('shopify_orders.export') }}?" + searchParams.toString();
-      }
     </script>
     @endpush
 </x-app-layout>
