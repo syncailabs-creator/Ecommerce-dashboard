@@ -146,6 +146,5 @@ class FetchShopifyOrders extends Command
                 ]);
             }
         }
-        dd($data);
     }
 }
