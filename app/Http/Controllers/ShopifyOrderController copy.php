@@ -11,7 +11,7 @@ class ShopifyOrderController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            $data = ShopifyOrder::query()->orderBy('order_date', 'desc');
+            $data = ShopifyOrder::query();
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->editColumn('name', function($row){
@@ -137,8 +137,8 @@ class ShopifyOrderController extends Controller
         $version = env('SHOPIFY_API_VERSION', '2025-01');
         $accessToken = env('SHOPIFY_ACCESS_TOKEN');
         
-        // Sync last 2 days only
-        $updatedAtMin = \Carbon\Carbon::now()->subDays(2)->toIso8601String();
+        // Sync last 5 days only
+        $updatedAtMin = \Carbon\Carbon::now()->subDays(5)->toIso8601String();
         
         $url = "https://{$shop}/admin/api/{$version}/orders.json?status=any&limit=250&updated_at_min={$updatedAtMin}";
 
@@ -216,7 +216,7 @@ class ShopifyOrderController extends Controller
                 }
             } while ($url);
 
-            return response()->json(['success' => true, 'message' => 'Synced successfully (Last 2 Days).']);
+            return response()->json(['success' => true, 'message' => 'Synced successfully (Last 5 Days).']);
 
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => 'Exception: ' . $e->getMessage()], 500);

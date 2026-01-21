@@ -29,12 +29,16 @@
                             </p> -->
                         </div>
                         <div class="hidden md:flex items-center gap-3">
-                             <!-- <div class="inline-flex items-center gap-2 px-4 py-2 bg-slate-50 rounded-lg border border-slate-100 text-slate-600 text-sm font-medium">
-                                <svg class="w-5 h-5 text-primary-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                             <button onclick="syncOrders()" id="syncBtn" class="inline-flex items-center gap-2 px-4 py-2 bg-slate-50 hover:bg-slate-100 rounded-lg border border-slate-100 text-slate-600 text-sm font-medium transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary-500">
+                                <svg id="syncIcon" class="w-5 h-5 text-primary-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
                                 </svg>
-                                <span>Real-time Sync</span>
-                             </div> -->
+                                <svg id="syncLoader" class="hidden w-5 h-5 text-primary-500 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                <span id="syncText">Sync Orders</span>
+                             </button>
 
                              <button onclick="exportOrders()" class="inline-flex items-center gap-2 px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-sm font-medium transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-900">
                                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -268,6 +272,48 @@
         });
 
         window.location.href = "{{ route('shopify_orders.export') }}?" + searchParams.toString();
+      }
+
+      function syncOrders() {
+          var btn = document.getElementById('syncBtn');
+          var icon = document.getElementById('syncIcon');
+          var loader = document.getElementById('syncLoader');
+          var text = document.getElementById('syncText');
+
+          // Loading State
+          btn.disabled = true;
+          btn.classList.add('opacity-75', 'cursor-not-allowed');
+          icon.classList.add('hidden');
+          loader.classList.remove('hidden');
+          text.innerText = 'Syncing...';
+
+          $.ajax({
+              url: "{{ route('shopify_orders.sync') }}",
+              type: "POST",
+              data: {
+                  _token: "{{ csrf_token() }}"
+              },
+              success: function(response) {
+                  if(response.success) {
+                      // Reload DataTable
+                      $('.data-table').DataTable().ajax.reload();
+                      alert('Synced successfully!');
+                  } else {
+                      alert('Sync failed: ' + response.message);
+                  }
+              },
+              error: function(xhr) {
+                  alert('Error syncing orders. Please try again.');
+              },
+              complete: function() {
+                  // Reset State
+                  btn.disabled = false;
+                  btn.classList.remove('opacity-75', 'cursor-not-allowed');
+                  icon.classList.remove('hidden');
+                  loader.classList.add('hidden');
+                  text.innerText = 'Sync Orders';
+              }
+          });
       }
     </script>
     @endpush
