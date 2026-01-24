@@ -60,10 +60,11 @@ class FetchShipwayOrders extends Command
             // We verify SSL False just in case, similar to the Shopify command.
             try {
                 $response = Http::withoutVerifying()
+                    ->timeout(120)
                     ->withBasicAuth($username, $password)
                     ->get("https://app.shipway.com/api/getorders", [
                         'page' => $page,
-                        'limit' => 100, // Explicitly requesting chunk size
+                        // 'limit' => 1, // Explicitly requesting chunk size
                         'date_from' => $startDate,
                         'date_to' => $endDate,
                     ]);
@@ -116,6 +117,12 @@ class FetchShipwayOrders extends Command
     {
         // $data matches the JSON object for a single order
         
+        if (!isset($data['order_id'])) {
+             // Log or skip if order_id is missing
+             // We can't update or create without the unique key
+             return;
+        }
+
         // 1. Create/Update Order
         $orderDate = isset($data['order_date']) ? Carbon::parse($data['order_date']) : null;
         
@@ -134,6 +141,7 @@ class FetchShipwayOrders extends Command
                 's_zipcode' => $data['s_zipcode'] ?? null,
                 'tracking_number' => $data['tracking_number'] ?? null,
                 'shipment_status' => $data['shipment_status'] ?? null,
+                'shipment_status_name' => $data['shipment_status_name'] ?? null,
                 'order_date' => $orderDate,
             ]
         );
@@ -190,5 +198,27 @@ class FetchShipwayOrders extends Command
         //          ]);
         //     }
         // }
+
+        $statuses = $data['shipment_status_scan'] ?? null;
+        if ($statuses) {
+            foreach ($statuses as $status) {
+                $existingStatus = ShipwayOrderStatus::where('shipway_order_id', $order->order_id)
+                    ->where('status', $status['status'])
+                    ->first();
+
+                if ($existingStatus) {
+                    $existingStatus->update([
+                        'updated_date' => $status['datetime']
+                    ]);
+                } else {
+                    ShipwayOrderStatus::create([
+                        'shipway_order_id' => $order->order_id,
+                        'status' => $status['status'],
+                        'datetime' => $status['datetime'],
+                        'updated_date' => $status['datetime'],
+                    ]);
+                }
+            }
+        }
     }
 }
