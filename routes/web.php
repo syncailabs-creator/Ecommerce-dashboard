@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ShipwayController;
 
 Route::get('clear', function () {
     Artisan::call('cache:clear');
@@ -31,3 +32,6 @@ Route::middleware('auth')->group(function () {
 });
 
 require __DIR__.'/auth.php';
+
+Route::any('/shipway/webhook', [ShipwayController::class, 'handleWebhook']);
+
