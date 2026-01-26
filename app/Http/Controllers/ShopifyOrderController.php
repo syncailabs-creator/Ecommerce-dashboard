@@ -223,4 +223,96 @@ class ShopifyOrderController extends Controller
         }
     }
 
+    public function fetchRecent(Request $request) {
+        set_time_limit(300);
+
+        $shop = env('SHOPIFY_DOMAIN');
+        $version = env('SHOPIFY_API_VERSION', '2025-01');
+        $accessToken = env('SHOPIFY_ACCESS_TOKEN');
+        
+        // Sync last 15 minutes
+        $createdAtMin = \Carbon\Carbon::now()->subMinutes(15)->toIso8601String();
+        
+        $url = "https://{$shop}/admin/api/{$version}/orders.json?status=any&limit=250&created_at_min={$createdAtMin}";
+
+        if (!$shop || !$accessToken) {
+            return response()->json(['success' => false, 'message' => 'Shopify credentials missing.'], 500);
+        }
+
+        try {
+            $totalProcessed = 0;
+            do {
+                $response = \Illuminate\Support\Facades\Http::withoutVerifying()->withHeaders([
+                    'X-Shopify-Access-Token' => $accessToken,
+                    'Content-Type' => 'application/json',
+                ])->get($url);
+
+                if ($response->successful()) {
+                    $orders = $response->json()['orders'] ?? [];
+                    $totalProcessed += count($orders);
+                    
+                    foreach ($orders as $data) {
+                        $utmTerm = null;
+                        $utmContent = null;
+                        $utmCampaign = null;
+                
+                        if (isset($data['note_attributes']) && is_array($data['note_attributes'])) {
+                            foreach ($data['note_attributes'] as $attr) {
+                                if ($attr['name'] === 'utm_term') {
+                                    $utmTerm = $attr['value'];
+                                } elseif ($attr['name'] === 'utm_content') {
+                                    $utmContent = $attr['value'];
+                                } elseif ($attr['name'] === 'utm_campaign') {
+                                    $utmCampaign = $attr['value'];
+                                }
+                            }
+                        }
+
+                        $order = \App\Models\ShopifyOrder::updateOrCreate(
+                            ['order_id' => $data['id']],
+                            [
+                                'name' => $data['name'],
+                                'total_price' => $data['total_price'],
+                                'financial_status' => $data['financial_status'],
+                                'utm_term' => $utmTerm,
+                                'utm_content' => $utmContent,
+                                'utm_campaign' => $utmCampaign,
+                                'tags' => $data['tags'],
+                                'order_date' => isset($data['created_at']) ? \Carbon\Carbon::parse($data['created_at']) : null,
+                            ]
+                        );
+
+                        if (isset($data['line_items']) && is_array($data['line_items'])) {
+                            \App\Models\ShopifyOrderProduct::where('shopify_order_id', $order->id)->delete();
+                
+                            foreach ($data['line_items'] as $item) {
+                                \App\Models\ShopifyOrderProduct::create([
+                                    'shopify_order_id' => $order->id,
+                                    'name' => $item['name'],
+                                    'price' => $item['price'],
+                                    'created_at' => now(),
+                                ]);
+                            }
+                        }
+                    }
+
+                    $linkHeader = $response->header('Link');
+                    if ($linkHeader && preg_match('/<([^>]+)>;\s*rel="next"/', $linkHeader, $matches)) {
+                        $url = $matches[1];
+                    } else {
+                        $url = null;
+                    }
+
+                } else {
+                    return response()->json(['success' => false, 'message' => 'Shopify API Error: ' . $response->status()], 500);
+                }
+            } while ($url);
+
+            return response()->json(['success' => true, 'message' => "Synced successfully. Processed $totalProcessed orders (Last 15 Mins)."]);
+
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Exception: ' . $e->getMessage()], 500);
+        }
+    }
+
 }

@@ -34,7 +34,11 @@ class FetchShopifyOrders extends Command
 
         $shop = env('SHOPIFY_DOMAIN');
         $version = env('SHOPIFY_API_VERSION', '2025-01');
-        $url = "https://{$shop}/admin/api/{$version}/orders.json?status=any&limit=250";
+        
+        $last15Min = Carbon::now()->subMinutes(15)->toIso8601String();
+
+        $url = "https://{$shop}/admin/api/{$version}/orders.json?status=any&limit=250&created_at_min={$last15Min}";
+        
         $accessToken = env('SHOPIFY_ACCESS_TOKEN');
 
         if (!$shop || !$accessToken) {

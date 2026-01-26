@@ -26,6 +26,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::get('/shopify-orders', [\App\Http\Controllers\ShopifyOrderController::class, 'index'])->name('shopify_orders.index');
     Route::post('/shopify-orders/sync', [\App\Http\Controllers\ShopifyOrderController::class, 'sync'])->name('shopify_orders.sync');
+
     Route::get('/shopify-orders/export', [\App\Http\Controllers\ShopifyOrderController::class, 'export'])->name('shopify_orders.export');
     Route::get('/shopify-orders/{id}', [\App\Http\Controllers\ShopifyOrderController::class, 'show'])->name('shopify_orders.show');
 
@@ -34,4 +35,5 @@ Route::middleware('auth')->group(function () {
 require __DIR__.'/auth.php';
 
 Route::any('/shipway/webhook', [ShipwayController::class, 'handleWebhook']);
+Route::get('/shopify-orders/fetch-recent', [\App\Http\Controllers\ShopifyOrderController::class, 'fetchRecent'])->name('shopify_orders.fetch_recent');
 
