@@ -145,3 +145,29 @@ FTP user
 username : jatin-ftp
 password : q0YEs1vq6rH6PRX6DyjQ
 directory : /home/drveda-automation/htdocs/automation.drveda.in/
+
+
+Shipment Status      Description
+DEL:-                Delivered
+INT:-                In Transit
+UND:-                Undelivered
+RTO:-                RTO
+RTD:-                RTO Delivered
+CAN:-                Canceled
+SCH:-                Shipment Booked
+ONH:-                On Hold
+OOD:-                Out For Delivery
+NFI:-                Status Pending
+NFIDS:-              NFID
+RSCH:-               Pickup Scheduled
+ROOP:-               Out for Pickup
+RPKP:-               Shipment Picked Up
+RDEL:-               Return Delivered
+RINT:-               Return In Transit
+RPSH:-               Pickup Rescheduled
+RCAN:-               Return Request Cancelled
+RCLO:-               Return Request Closed
+RSMD:-               Pickup Delayed
+PCAN:-               Pickup Cancelled
+ROTH:-               Others
+RPF:-                Pickup Failed
