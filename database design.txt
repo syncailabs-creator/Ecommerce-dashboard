@@ -1,0 +1,147 @@
+shopify_orders
+
+id
+order_id
+name
+total_price
+created_at
+financial_status
+utm_term
+utm_content
+utm_campaign
+tags
+created_date
+updated_date
+deleted_date
+
+
+shopify_order_products
+id
+shopify_order_id
+name
+price
+created_date
+updated_date
+deleted_date
+
+
+shipway_orders
+id
+order_id
+shipping_cost
+payment_method
+b_city
+b_country
+b_state
+b_zipcode
+s_city
+s_state
+s_country
+s_zipcode
+tracking_number
+shipment_status
+order_date
+created_date
+updated_date
+deleted_date
+
+
+shipway_orders_products
+id
+shipway_order_id
+hsn_code
+product
+price
+amount
+created_date
+updated_date
+deleted_date
+
+
+shipway_orders_status
+id
+shipway_order_id
+status
+datetime
+updated_datetime
+created_date
+updated_date
+deleted_date
+
+
+meta_ads_accounts
+id 
+account_id
+name
+account_status
+currency
+timezone_name
+amount_spent
+created_at
+updated_at
+deleted_at
+ 
+
+
+
+
+
+meta ads account
+
+	{
+            "id": "act_1180807037547596",
+            "name": "DRV1",
+            "account_status": 1,
+            "currency": "INR",
+            "timezone_name": "Asia/Kolkata",
+            "amount_spent": "6445996"
+        },
+	{
+            "id": "act_811478534628656",
+            "name": "Nitido - 11193 - S362 31",
+            "account_status": 1,
+            "currency": "USD",
+            "timezone_name": "Asia/Kolkata",
+            "amount_spent": "65558"
+        },
+        {
+            "id": "act_646437344971620",
+            "name": "Nitido - 11192 - S362 30",
+            "account_status": 1,
+            "currency": "USD",
+            "timezone_name": "Asia/Kolkata",
+            "amount_spent": "3206345"
+        },
+
+
+
+
+server 
+https://206.189.135.67:8443/
+drveda
+drveda@123
+
+
+206.189.135.67
+root
+smarth@0912Drv
+
+domain name : automation.drveda.in
+site user : drveda-automation
+site password : 7MnRR1zVPIMoAQIc92w3
+
+
+Database
+db name : drvedareports
+db user name : drvedareports
+db password : gm7Yg2GGnFNERCQrU6UA
+
+SSH 
+username : jatin
+password : NIvXxiNPfS9bO0lqrUbY
+SSH
+
+FTP user
+username : jatin-ftp
+password : q0YEs1vq6rH6PRX6DyjQ
+directory : /home/drveda-automation/htdocs/automation.drveda.in/
