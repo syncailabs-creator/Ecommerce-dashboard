@@ -147,6 +147,9 @@ password : q0YEs1vq6rH6PRX6DyjQ
 directory : /home/drveda-automation/htdocs/automation.drveda.in/
 
 
+admin@example.com
+password
+
 Shipment Status      Description
 DEL:-                Delivered
 INT:-                In Transit
