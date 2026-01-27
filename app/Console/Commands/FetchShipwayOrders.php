@@ -33,7 +33,7 @@ class FetchShipwayOrders extends Command
         $this->info('Fetching orders from Shipway...');
 
         $username = env('SHIPWAY_USERNAME');
-        $password = env('PASSWORD');
+        $password = env('SHIPWAY_PASSWORD');
 
         if (!$username || !$password) {
             $this->error('Shipway credentials missing. Please set SHIPWAY_USERNAME and PASSWORD in .env');
@@ -180,45 +180,26 @@ class FetchShipwayOrders extends Command
         }
         
         // 3. Optional: Update Status History (ShipwayOrderStatus)
-        // If the user wants to track status changes. 
-        // We only have the *current* status in the response ("status": "H", "shipment_status": "RTD").
-        // We can check if the last status entry for this order is different.
-        
-        // $currentStatus = $data['shipment_status'] ?? null;
-        // if ($currentStatus) {
-        //     $lastStatus = ShipwayOrderStatus::where('shipway_order_id', $order->order_id)
-        //                     ->orderBy('created_date', 'desc')
-        //                     ->first();
-                            
-        //     if (!$lastStatus || $lastStatus->status !== $currentStatus) {
-        //          ShipwayOrderStatus::create([
-        //              'shipway_order_id' => $order->order_id,
-        //              'status' => $currentStatus,
-        //              'datetime' => now(), // The "datetime" column in schema
-        //          ]);
+        // $statuses = $data['shipment_status_scan'] ?? null;
+        // if ($statuses) {
+        //     foreach ($statuses as $status) {
+        //         $existingStatus = ShipwayOrderStatus::where('shipway_order_id', $order->order_id)
+        //             ->where('status', $status['status'])
+        //             ->first();
+
+        //         if ($existingStatus) {
+        //             $existingStatus->update([
+        //                 'updated_date' => $status['datetime']
+        //             ]);
+        //         } else {
+        //             ShipwayOrderStatus::create([
+        //                 'shipway_order_id' => $order->order_id,
+        //                 'status' => $status['status'],
+        //                 'datetime' => $status['datetime'],
+        //                 'updated_date' => $status['datetime'],
+        //             ]);
+        //         }
         //     }
         // }
-
-        $statuses = $data['shipment_status_scan'] ?? null;
-        if ($statuses) {
-            foreach ($statuses as $status) {
-                $existingStatus = ShipwayOrderStatus::where('shipway_order_id', $order->order_id)
-                    ->where('status', $status['status'])
-                    ->first();
-
-                if ($existingStatus) {
-                    $existingStatus->update([
-                        'updated_date' => $status['datetime']
-                    ]);
-                } else {
-                    ShipwayOrderStatus::create([
-                        'shipway_order_id' => $order->order_id,
-                        'status' => $status['status'],
-                        'datetime' => $status['datetime'],
-                        'updated_date' => $status['datetime'],
-                    ]);
-                }
-            }
-        }
     }
 }

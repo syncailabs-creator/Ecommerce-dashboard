@@ -41,4 +41,9 @@ return [
         'api_version' => env('SHOPIFY_API_VERSION', '2025-01'),
     ],
 
+    'shipway' => [
+        'username' => env('SHIPWAY_USERNAME'),
+        'password' => env('SHIPWAY_PASSWORD'), 
+    ],
+
 ];

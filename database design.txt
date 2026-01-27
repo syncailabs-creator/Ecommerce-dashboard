@@ -81,6 +81,25 @@ created_at
 updated_at
 deleted_at
  
+meta_ads_campaigns
+id
+meta_adds_account_id
+campaign_id
+campaign_name
+impressions
+spend
+reach
+cpc
+cpm
+ctr
+frequency
+clicks
+conversions
+cost_per_conversion
+created_at
+updated_at
+deleted_at
+
 
 
 
@@ -150,27 +169,24 @@ https://automation.drveda.in/login
 admin@example.com
 password
 
-Shipment Status      Description
-DEL:-                Delivered
-INT:-                In Transit
-UND:-                Undelivered
-RTO:-                RTO
-RTD:-                RTO Delivered
-CAN:-                Canceled
-SCH:-                Shipment Booked
-ONH:-                On Hold
-OOD:-                Out For Delivery
-NFI:-                Status Pending
-NFIDS:-              NFID
-RSCH:-               Pickup Scheduled
-ROOP:-               Out for Pickup
-RPKP:-               Shipment Picked Up
-RDEL:-               Return Delivered
-RINT:-               Return In Transit
-RPSH:-               Pickup Rescheduled
-RCAN:-               Return Request Cancelled
-RCLO:-               Return Request Closed
-RSMD:-               Pickup Delayed
-PCAN:-               Pickup Cancelled
-ROTH:-               Others
-RPF:-                Pickup Failed
+
+CREATE TABLE IF NOT EXISTS `meta_ads_campaigns` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `meta_adds_account_id` varchar(191) DEFAULT NULL,
+  `campaign_id` varchar(191) DEFAULT NULL,
+  `campaign_name` varchar(191) DEFAULT NULL,
+  `impressions` varchar(191) DEFAULT NULL,
+  `spend` varchar(191) DEFAULT NULL,
+  `reach` varchar(191) DEFAULT NULL,
+  `cpc` varchar(191) DEFAULT NULL,
+  `cpm` varchar(191) DEFAULT NULL,
+  `ctr` varchar(191) DEFAULT NULL,
+  `frequency` varchar(191) DEFAULT NULL,
+  `clicks` varchar(191) DEFAULT NULL,
+  `conversions` varchar(191) DEFAULT NULL,
+  `cost_per_conversion` varchar(191) DEFAULT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `deleted_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;

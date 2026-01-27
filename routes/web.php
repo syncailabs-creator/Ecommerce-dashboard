@@ -21,6 +21,7 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::get('/shopify-orders/fetch-recent', [\App\Http\Controllers\ShopifyOrderController::class, 'fetchRecent'])->name('shopify_orders.fetch_recent');
+Route::get('/shipway/fetch-orders', [ShipwayController::class, 'fetchOrders'])->name('shipway.fetch_orders');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

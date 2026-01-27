@@ -14,6 +14,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->validateCsrfTokens(except: [
             '/shipway/webhook',
             '/shopify-orders/fetch-recent',
+            '/shopify/fetch-orders',
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
