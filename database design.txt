@@ -146,7 +146,7 @@ username : jatin-ftp
 password : q0YEs1vq6rH6PRX6DyjQ
 directory : /home/drveda-automation/htdocs/automation.drveda.in/
 
-
+https://automation.drveda.in/login
 admin@example.com
 password
 
