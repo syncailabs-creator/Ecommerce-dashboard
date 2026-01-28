@@ -22,6 +22,11 @@ Route::get('/dashboard', function () {
 
 Route::get('/shopify-orders/fetch-recent', [\App\Http\Controllers\ShopifyOrderController::class, 'fetchRecent'])->name('shopify_orders.fetch_recent');
 Route::get('/shipway/fetch-orders', [ShipwayController::class, 'fetchOrders'])->name('shipway.fetch_orders');
+Route::get('/meta-ads/fetch-campaigns', [\App\Http\Controllers\MetaAdsController::class, 'fetchCampaigns'])->name('meta_ads.fetch_campaigns');
+Route::get('/meta-ads/fetch-adsets', [\App\Http\Controllers\MetaAdsController::class, 'fetchAdSets'])->name('meta_ads.fetch_adsets');
+Route::get('/meta-ads/fetch-ads', [\App\Http\Controllers\MetaAdsController::class, 'fetchAds'])->name('meta_ads.fetch_ads');
+
+
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

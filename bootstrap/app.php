@@ -15,6 +15,9 @@ return Application::configure(basePath: dirname(__DIR__))
             '/shipway/webhook',
             '/shopify-orders/fetch-recent',
             '/shopify/fetch-orders',
+            '/meta-ads/fetch-campaigns',
+            '/meta-ads/fetch-adsets',
+            '/meta-ads/fetch-ads',
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

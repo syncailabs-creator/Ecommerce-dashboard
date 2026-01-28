@@ -46,4 +46,8 @@ return [
         'password' => env('SHIPWAY_PASSWORD'), 
     ],
 
+    'meta_ads' => [
+        'access_token' => env('META_ACCESS_TOKEN'),
+    ],
+
 ];
