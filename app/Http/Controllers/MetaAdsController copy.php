@@ -5,11 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\MetaAdsAccount;
 use App\Models\MetaAdsCampaign;
-use App\Models\MetaAdsCampaignMaster;
 use App\Models\MetaAdsSet;
-use App\Models\MetaAdsSetMaster;
 use App\Models\MetaAdsAd;
-use App\Models\MetaAdsAdMaster;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
@@ -69,22 +66,12 @@ class MetaAdsController extends Controller
                             }
                         }
 
-                        // Create or Update Campaign Master
-                        $campaignMaster = MetaAdsCampaignMaster::updateOrCreate(
-                            [
-                                'campaign_id' => $item['campaign_id'],
-                                'meta_ads_account_id' => $account->id
-                            ],
-                            [
-                                'account_id' => $account->account_id,
-                                'campaign_name' => $item['campaign_name'] ?? null,
-                            ]
-                        );
-
-                        // Create or Update Campaign Insights (using master reference)
                         MetaAdsCampaign::create(
                             [
-                                'meta_ads_campaign_master_id' => $campaignMaster->id,
+                                'campaign_id' => $item['campaign_id'],
+                                'meta_ads_account_id' => $account->id,
+                                'account_id' => $account->account_id,
+                                'campaign_name' => $item['campaign_name'] ?? null,
                                 'impressions' => $item['impressions'] ?? 0,
                                 'spend' => $item['spend'] ?? 0,
                                 'reach' => $item['reach'] ?? 0,
@@ -135,7 +122,6 @@ class MetaAdsController extends Controller
                     $data = $response->json()['data'] ?? [];
 
                     foreach ($data as $item) {
-                        // Conversions (actions -> purchase)
                         $conversions = 0;
                         if (isset($item['actions'])) {
                             foreach ($item['actions'] as $action) {
@@ -146,7 +132,6 @@ class MetaAdsController extends Controller
                             }
                         }
 
-                        // Cost per conversion (cost_per_action_type -> purchase)
                         $costPerConversion = 0;
                         if (isset($item['cost_per_action_type'])) {
                             foreach ($item['cost_per_action_type'] as $cpa) {
@@ -157,7 +142,6 @@ class MetaAdsController extends Controller
                             }
                         }
 
-                        // Clicks (actions -> link_click)
                         $clicks = 0;
                         if (isset($item['actions'])) {
                             foreach ($item['actions'] as $action) {
@@ -168,8 +152,7 @@ class MetaAdsController extends Controller
                             }
                         }
 
-                        // Create or Update AdSet Master
-                        $adSetMaster = MetaAdsSetMaster::updateOrCreate(
+                        MetaAdsSet::updateOrCreate(
                             [
                                 'adset_id' => $item['adset_id'],
                                 'meta_ads_account_id' => $account->id
@@ -179,13 +162,6 @@ class MetaAdsController extends Controller
                                 'adset_name' => $item['adset_name'] ?? null,
                                 'campaign_id' => $item['campaign_id'] ?? null,
                                 'campaign_name' => $item['campaign_name'] ?? null,
-                            ]
-                        );
-
-                        // Create AdSet Insights (using master reference)
-                        MetaAdsSet::create(
-                            [
-                                'meta_ads_set_master_id' => $adSetMaster->id,
                                 'impressions' => $item['impressions'] ?? 0,
                                 'spend' => $item['spend'] ?? 0,
                                 'reach' => $item['reach'] ?? 0,
@@ -266,8 +242,7 @@ class MetaAdsController extends Controller
                             }
                         }
 
-                        // Create or Update Ad Master
-                        $adMaster = MetaAdsAdMaster::updateOrCreate(
+                        MetaAdsAd::updateOrCreate(
                             [
                                 'ad_id' => $item['ad_id'],
                                 'meta_ads_account_id' => $account->id
@@ -279,13 +254,6 @@ class MetaAdsController extends Controller
                                 'adset_name' => $item['adset_name'] ?? null,
                                 'campaign_id' => $item['campaign_id'] ?? null,
                                 'campaign_name' => $item['campaign_name'] ?? null,
-                            ]
-                        );
-
-                        // Create Ad Insights (using master reference)
-                        MetaAdsAd::create(
-                            [
-                                'meta_ads_ad_master_id' => $adMaster->id,
                                 'impressions' => $item['impressions'] ?? 0,
                                 'spend' => $item['spend'] ?? 0,
                                 'reach' => $item['reach'] ?? 0,

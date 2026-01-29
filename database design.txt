@@ -289,3 +289,69 @@ ALTER TABLE `meta_ads_sets` CHANGE `meta_ads_account_id` `meta_ads_account_id` I
 ALTER TABLE `meta_ads_campaigns` ADD `account_id` varchar(191) NULL DEFAULT NULL AFTER `meta_ads_account_id`;
 ALTER TABLE `meta_ads_ads` ADD `account_id` varchar(191) NULL DEFAULT NULL AFTER `meta_ads_account_id`;
 ALTER TABLE `meta_ads_sets` ADD `account_id` varchar(191) NULL DEFAULT NULL AFTER `meta_ads_account_id`;
+---------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `meta_ads_campaign_masters` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `meta_ads_account_id` int DEFAULT NULL,
+  `account_id` varchar(191) DEFAULT NULL,
+  `campaign_id` varchar(191) DEFAULT NULL,
+  `campaign_name` varchar(191) DEFAULT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `deleted_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- Add the foreign key reference column
+ALTER TABLE `meta_ads_campaigns` ADD `meta_ads_campaign_master_id` INT NULL AFTER `id`;
+
+-- Drop the columns that are now in the master table
+ALTER TABLE `meta_ads_campaigns` DROP COLUMN `meta_ads_account_id`;
+ALTER TABLE `meta_ads_campaigns` DROP COLUMN `account_id`;
+ALTER TABLE `meta_ads_campaigns` DROP COLUMN `campaign_id`;
+ALTER TABLE `meta_ads_campaigns` DROP COLUMN `campaign_name`;
+
+CREATE TABLE IF NOT EXISTS `meta_ads_set_masters` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `meta_ads_account_id` int DEFAULT NULL,
+  `account_id` varchar(191) DEFAULT NULL,
+  `adset_id` varchar(191) DEFAULT NULL,
+  `adset_name` varchar(191) DEFAULT NULL,
+  `campaign_id` varchar(191) DEFAULT NULL,
+  `campaign_name` varchar(191) DEFAULT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `deleted_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- Add the foreign key reference column
+ALTER TABLE `meta_ads_sets` ADD `meta_ads_set_master_id` INT NULL AFTER `id`;
+
+-- Drop the columns that are now in the master table
+ALTER TABLE `meta_ads_sets` DROP COLUMN `meta_ads_account_id`;
+ALTER TABLE `meta_ads_sets` DROP COLUMN `account_id`;
+ALTER TABLE `meta_ads_sets` DROP COLUMN `adset_id`;
+ALTER TABLE `meta_ads_sets` DROP COLUMN `adset_name`;
+ALTER TABLE `meta_ads_sets` DROP COLUMN `campaign_id`;
+ALTER TABLE `meta_ads_sets` DROP COLUMN `campaign_name`;
+
+CREATE TABLE IF NOT EXISTS `meta_ads_ad_masters` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `meta_ads_account_id` int DEFAULT NULL,
+  `account_id` varchar(191) DEFAULT NULL,
+  `ad_id` varchar(191) DEFAULT NULL,
+  `ad_name` varchar(191) DEFAULT NULL,
+  `adset_id` varchar(191) DEFAULT NULL,
+  `adset_name` varchar(191) DEFAULT NULL,
+  `campaign_id` varchar(191) DEFAULT NULL,
+  `campaign_name` varchar(191) DEFAULT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `deleted_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
