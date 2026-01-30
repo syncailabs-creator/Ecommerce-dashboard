@@ -11,14 +11,41 @@ class ShopifyOrderController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            $data = ShopifyOrder::query()->orderBy('order_date', 'desc');
+            $data = ShopifyOrder::with(['metaCampaign', 'metaAdSet', 'metaAd'])
+                ->select('shopify_orders.*') // Ensure we select from orders table to avoid column collision
+                ->orderBy('order_date', 'desc');
+
             return DataTables::of($data)
                 ->addIndexColumn()
+                ->filterColumn('campaign_name', function($query, $keyword) {
+                    $query->whereHas('metaCampaign', function($q) use ($keyword) {
+                        $q->where('campaign_name', 'like', "%{$keyword}%");
+                    });
+                })
+                ->filterColumn('adset_name', function($query, $keyword) {
+                    $query->whereHas('metaAdSet', function($q) use ($keyword) {
+                        $q->where('adset_name', 'like', "%{$keyword}%");
+                    });
+                })
+                ->filterColumn('ad_name', function($query, $keyword) {
+                    $query->whereHas('metaAd', function($q) use ($keyword) {
+                        $q->where('ad_name', 'like', "%{$keyword}%");
+                    });
+                })
                 ->editColumn('name', function($row){
                      return '<a href="'.route('shopify_orders.show', $row->id).'" class="text-indigo-600 hover:text-indigo-900 font-medium transition duration-150">'.$row->name.'</a>';
                 })
                 ->editColumn('order_date', function($row){
                     return $row->order_date ? \Carbon\Carbon::parse($row->order_date)->format('Y-m-d H:i:s') : '';
+                })
+                ->addColumn('campaign_name', function($row){
+                    return $row->metaCampaign ? $row->metaCampaign->campaign_name : '';
+                })
+                ->addColumn('adset_name', function($row){
+                    return $row->metaAdSet ? $row->metaAdSet->adset_name : '';
+                })
+                ->addColumn('ad_name', function($row){
+                    return $row->metaAd ? $row->metaAd->ad_name : '';
                 })
                 ->rawColumns(['name'])
                 ->make(true);

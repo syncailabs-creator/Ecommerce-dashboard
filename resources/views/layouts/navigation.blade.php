@@ -19,7 +19,7 @@
                         {{ __('Payment Type Report') }}
                     </x-nav-link>
                     <x-nav-link :href="route('shopify_orders.index')" :active="request()->routeIs('shopify_orders.index')">
-                        {{ __('Shopify Orders') }}
+                        {{ __('Order Classification') }}
                     </x-nav-link>
                 </div>
             </div>
@@ -77,7 +77,7 @@
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('shopify_orders.index')" :active="request()->routeIs('shopify_orders.index')">
-                {{ __('Shopify Orders') }}
+                {{ __('Order Classification') }}
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('reports.payment_type')" :active="request()->routeIs('reports.payment_type')">
                 {{ __('Payment Type Report') }}

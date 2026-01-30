@@ -7,7 +7,7 @@
                 <div class="flex items-center gap-2 text-sm text-slate-500">
                     <a href="{{ route('dashboard') }}" class="hover:text-primary-600 transition-colors cursor-default cursor-pointer">Dashboard</a>
                     <svg class="h-4 w-4 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
-                    <span class="font-medium text-slate-800">Shopify Orders</span>
+                    <span class="font-medium text-slate-800">Order Classification</span>
                 </div>
                 <!-- Optional: Add an action button here if needed in future (e.g. Sync Orders) -->
             </div>
@@ -22,7 +22,7 @@
                     <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
                         <div>
                             <h1 class="text-3xl font-bold tracking-tight text-slate-900 mb-2">
-                                Shopify Orders
+                                Order Classification
                             </h1>
                             <!-- <p class="text-slate-500 text-sm max-w-2xl">
                                 Manage and track all your incoming orders from Shopify in one place. Filter by status, date, or order ID to find exactly what you need.
@@ -58,12 +58,15 @@
                         <thead>
                             <tr class="bg-slate-50/50">
                                 <th class="py-4 px-4 text-xs font-bold uppercase tracking-wider text-slate-500 border-b border-slate-200">No</th>
-                                <th class="py-4 px-4 text-xs font-bold uppercase tracking-wider text-slate-500 border-b border-slate-200">Order ID</th>
+                                <!-- <th class="py-4 px-4 text-xs font-bold uppercase tracking-wider text-slate-500 border-b border-slate-200">Order ID</th> -->
+                                <th class="py-4 px-4 text-xs font-bold uppercase tracking-wider text-slate-500 border-b border-slate-200">Order Date</th>
                                 <th class="py-4 px-4 text-xs font-bold uppercase tracking-wider text-slate-500 border-b border-slate-200">Name</th>
                                 <th class="py-4 px-4 text-xs font-bold uppercase tracking-wider text-slate-500 border-b border-slate-200">Total Price</th>
                                 <th class="py-4 px-4 text-xs font-bold uppercase tracking-wider text-slate-500 border-b border-slate-200">Financial Status</th>
-                                <th class="py-4 px-4 text-xs font-bold uppercase tracking-wider text-slate-500 border-b border-slate-200">UTM Term</th>
-                                <th class="py-4 px-4 text-xs font-bold uppercase tracking-wider text-slate-500 border-b border-slate-200">Order Date</th>
+                                <!-- <th class="py-4 px-4 text-xs font-bold uppercase tracking-wider text-slate-500 border-b border-slate-200">UTM Term</th> -->
+                                <th class="py-4 px-4 text-xs font-bold uppercase tracking-wider text-slate-500 border-b border-slate-200">Campaign</th>
+                                <th class="py-4 px-4 text-xs font-bold uppercase tracking-wider text-slate-500 border-b border-slate-200">Ad Set</th>
+                                <th class="py-4 px-4 text-xs font-bold uppercase tracking-wider text-slate-500 border-b border-slate-200">Ad</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-50 text-slate-700 text-sm">
@@ -166,12 +169,15 @@
             ajax: "{{ route('shopify_orders.index') }}",
             columns: [
                 {data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false},
-                {data: 'order_id', name: 'order_id'},
+                // {data: 'order_id', name: 'order_id'},
+                {data: 'order_date', name: 'order_date'},
                 {data: 'name', name: 'name'},
                 {data: 'total_price', name: 'total_price'},
                 {data: 'financial_status', name: 'financial_status'},
-                {data: 'utm_term', name: 'utm_term'},
-                {data: 'order_date', name: 'order_date'},
+                // {data: 'utm_term', name: 'utm_term'},
+                {data: 'campaign_name', name: 'campaign_name'},
+                {data: 'adset_name', name: 'adset_name'},
+                {data: 'ad_name', name: 'ad_name'},
             ],
             initComplete: function () {
                 var api = this.api();
@@ -196,7 +202,7 @@
 
                         // Special handling for Financial Status - Dropdown
                         if (title == 'Financial Status') {
-                             var select = $('<select><option value="">All Status</option><option value="paid">Paid</option><option value="pending">Pending</option><option value="refunded">Refunded</option><option value="voided">Voided</option></select>')
+                             var select = $('<select><option value="">All Status</option><option value="paid">Paid</option><option value="pending">Pending</option><option value="partially_paid">Partially Paid</option></select>')
                                 .appendTo( $(cell).empty() )
                                 .on( 'change', function () {
                                     var val = $.fn.dataTable.util.escapeRegex(

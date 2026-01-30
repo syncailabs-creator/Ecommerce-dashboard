@@ -22,4 +22,9 @@ class ShipwayOrder extends Model
     {
         return $this->hasMany(ShipwayOrderStatus::class, 'shipway_order_id');
     }
+
+    public function shopifyOrder()
+    {
+        return $this->belongsTo(ShopifyOrder::class, 'order_id', 'name');
+    }
 }

@@ -1,3 +1,39 @@
+server 
+https://206.189.135.67:8443/
+drveda
+drveda@123
+
+
+206.189.135.67
+root
+smarth@0912Drv
+
+domain name : automation.drveda.in
+site user : drveda-automation
+site password : 7MnRR1zVPIMoAQIc92w3
+
+
+Database
+db name : drvedareports
+db user name : drvedareports
+db password : gm7Yg2GGnFNERCQrU6UA
+
+SSH 
+username : jatin
+password : NIvXxiNPfS9bO0lqrUbY
+SSH
+
+FTP user
+username : jatin-ftp
+password : q0YEs1vq6rH6PRX6DyjQ
+directory : /home/drveda-automation/htdocs/automation.drveda.in/
+
+https://automation.drveda.in/login
+admin@example.com
+password
+
+
+
 shopify_orders
 
 id
@@ -176,42 +212,6 @@ meta ads account
 
 
 
-
-server 
-https://206.189.135.67:8443/
-drveda
-drveda@123
-
-
-206.189.135.67
-root
-smarth@0912Drv
-
-domain name : automation.drveda.in
-site user : drveda-automation
-site password : 7MnRR1zVPIMoAQIc92w3
-
-
-Database
-db name : drvedareports
-db user name : drvedareports
-db password : gm7Yg2GGnFNERCQrU6UA
-
-SSH 
-username : jatin
-password : NIvXxiNPfS9bO0lqrUbY
-SSH
-
-FTP user
-username : jatin-ftp
-password : q0YEs1vq6rH6PRX6DyjQ
-directory : /home/drveda-automation/htdocs/automation.drveda.in/
-
-https://automation.drveda.in/login
-admin@example.com
-password
-
-
 CREATE TABLE IF NOT EXISTS `meta_ads_campaigns` (
   `id` int NOT NULL AUTO_INCREMENT,
   `meta_ads_account_id` varchar(191) DEFAULT NULL,
@@ -355,3 +355,7 @@ CREATE TABLE IF NOT EXISTS `meta_ads_ad_masters` (
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+UPDATE `shopify_orders`
+SET `name` = REPLACE(`name`, '#', '')
+WHERE `name` LIKE '%#%';
