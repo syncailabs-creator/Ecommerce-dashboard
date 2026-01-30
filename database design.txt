@@ -359,3 +359,20 @@ CREATE TABLE IF NOT EXISTS `meta_ads_ad_masters` (
 UPDATE `shopify_orders`
 SET `name` = REPLACE(`name`, '#', '')
 WHERE `name` LIKE '%#%';
+
+
+
+Reports
+
+1. Payment Type Report
+3.1 Order Classification
+3.2 Meta Performance Report (Campaign)
+3.3 Meta Performance Report (Adset)
+3.4 Meta Performance Report (Ad)
+
+
+
+2. Delivery Report (shipway, shopify)
+4.1 Delivery Classification (Campaign)
+4.2 Delivery Classification (Adset)
+4.3 Delivery Classification (Ad)

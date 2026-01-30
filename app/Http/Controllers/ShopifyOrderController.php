@@ -11,26 +11,26 @@ class ShopifyOrderController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            $data = ShopifyOrder::with(['metaCampaign', 'metaAdSet', 'metaAd'])
-                ->select('shopify_orders.*') // Ensure we select from orders table to avoid column collision
-                ->orderBy('order_date', 'desc');
+            $data = ShopifyOrder::select([
+                    'shopify_orders.*',
+                    'meta_ads_campaign_masters.campaign_name',
+                    'meta_ads_set_masters.adset_name',
+                    'meta_ads_ad_masters.ad_name'
+                ])
+                ->leftJoin('meta_ads_campaign_masters', 'shopify_orders.utm_campaign', '=', 'meta_ads_campaign_masters.campaign_id')
+                ->leftJoin('meta_ads_set_masters', 'shopify_orders.utm_term', '=', 'meta_ads_set_masters.adset_id')
+                ->leftJoin('meta_ads_ad_masters', 'shopify_orders.utm_content', '=', 'meta_ads_ad_masters.ad_id');
 
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->filterColumn('campaign_name', function($query, $keyword) {
-                    $query->whereHas('metaCampaign', function($q) use ($keyword) {
-                        $q->where('campaign_name', 'like', "%{$keyword}%");
-                    });
+                    $query->where('meta_ads_campaign_masters.campaign_name', 'like', "%{$keyword}%");
                 })
                 ->filterColumn('adset_name', function($query, $keyword) {
-                    $query->whereHas('metaAdSet', function($q) use ($keyword) {
-                        $q->where('adset_name', 'like', "%{$keyword}%");
-                    });
+                    $query->where('meta_ads_set_masters.adset_name', 'like', "%{$keyword}%");
                 })
                 ->filterColumn('ad_name', function($query, $keyword) {
-                    $query->whereHas('metaAd', function($q) use ($keyword) {
-                        $q->where('ad_name', 'like', "%{$keyword}%");
-                    });
+                    $query->where('meta_ads_ad_masters.ad_name', 'like', "%{$keyword}%");
                 })
                 ->editColumn('name', function($row){
                      return '<a href="'.route('shopify_orders.show', $row->id).'" class="text-indigo-600 hover:text-indigo-900 font-medium transition duration-150">'.$row->name.'</a>';
@@ -39,13 +39,13 @@ class ShopifyOrderController extends Controller
                     return $row->order_date ? \Carbon\Carbon::parse($row->order_date)->format('Y-m-d H:i:s') : '';
                 })
                 ->addColumn('campaign_name', function($row){
-                    return $row->metaCampaign ? $row->metaCampaign->campaign_name : '';
+                    return $row->campaign_name ?? '';
                 })
                 ->addColumn('adset_name', function($row){
-                    return $row->metaAdSet ? $row->metaAdSet->adset_name : '';
+                    return $row->adset_name ?? '';
                 })
                 ->addColumn('ad_name', function($row){
-                    return $row->metaAd ? $row->metaAd->ad_name : '';
+                    return $row->ad_name ?? '';
                 })
                 ->rawColumns(['name'])
                 ->make(true);

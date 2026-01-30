@@ -166,6 +166,7 @@
             serverSide: true,
             orderCellsTop: true,
             fixedHeader: true,
+            order: [[1, "desc"]], // Default sort by Order Date (Column 1)
             ajax: "{{ route('shopify_orders.index') }}",
             columns: [
                 {data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false},
@@ -175,9 +176,9 @@
                 {data: 'total_price', name: 'total_price'},
                 {data: 'financial_status', name: 'financial_status'},
                 // {data: 'utm_term', name: 'utm_term'},
-                {data: 'campaign_name', name: 'campaign_name'},
-                {data: 'adset_name', name: 'adset_name'},
-                {data: 'ad_name', name: 'ad_name'},
+                {data: 'campaign_name', name: 'campaign_name', sortable:false},
+                {data: 'adset_name', name: 'adset_name', sortable:false},
+                {data: 'ad_name', name: 'ad_name', sortable:false},
             ],
             initComplete: function () {
                 var api = this.api();
