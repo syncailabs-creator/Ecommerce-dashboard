@@ -28,7 +28,7 @@
                                 Manage and track all your incoming orders from Shopify in one place. Filter by status, date, or order ID to find exactly what you need.
                             </p> -->
                         </div>
-                        <div class="hidden md:flex items-center gap-3">
+                        <!-- <div class="hidden md:flex items-center gap-3">
                              <button onclick="syncOrders()" id="syncBtn" class="inline-flex items-center gap-2 px-4 py-2 bg-slate-50 hover:bg-slate-100 rounded-lg border border-slate-100 text-slate-600 text-sm font-medium transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary-500">
                                 <svg id="syncIcon" class="w-5 h-5 text-primary-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
@@ -46,7 +46,7 @@
                                 </svg>
                                 <span>Export CSV</span>
                              </button>
-                        </div>
+                        </div> -->
                     </div>
                 </div>
             </div>
@@ -76,12 +76,6 @@
                 </div>
             </div>
             
-            <div class="mt-8 text-center">
-                 <p class="text-xs text-slate-400">
-                    Orders are automatically synchronized with your Shopify store.
-                </p>
-            </div>
-
         </main>
     </div>
 
