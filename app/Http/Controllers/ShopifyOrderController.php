@@ -177,7 +177,7 @@ class ShopifyOrderController extends Controller
                         $order = \App\Models\ShopifyOrder::updateOrCreate(
                             ['order_id' => $data['id']],
                             [
-                                'name' => $data['name'],
+                                'name' => str_replace('#', '', $data['name']),
                                 'total_price' => $data['total_price'],
                                 'financial_status' => $data['financial_status'],
                                 'utm_term' => $utmTerm,
@@ -271,7 +271,7 @@ class ShopifyOrderController extends Controller
                         $order = \App\Models\ShopifyOrder::updateOrCreate(
                             ['order_id' => $data['id']],
                             [
-                                'name' => $data['name'],
+                                'name' => str_replace('#', '', $data['name']),
                                 'total_price' => $data['total_price'],
                                 'financial_status' => $data['financial_status'],
                                 'utm_term' => $utmTerm,
