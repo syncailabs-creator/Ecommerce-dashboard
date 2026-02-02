@@ -38,9 +38,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/shopify-orders/export', [\App\Http\Controllers\ShopifyOrderController::class, 'export'])->name('shopify_orders.export');
     Route::get('/shopify-orders/{id}', [\App\Http\Controllers\ShopifyOrderController::class, 'show'])->name('shopify_orders.show');
     Route::get('/reports/payment-type', [\App\Http\Controllers\PaymentTypeReportController::class, 'index'])->name('reports.payment_type');
-    Route::get('/reports/meta-performance/campaign', [\App\Http\Controllers\MetaPerformanceReportController::class, 'campaign'])->name('reports.meta_performance.campaign');
-    Route::get('/reports/meta-performance/adset', [\App\Http\Controllers\MetaPerformanceReportController::class, 'adSet'])->name('reports.meta_performance.adset');
-    Route::get('/reports/meta-performance/ad', [\App\Http\Controllers\MetaPerformanceReportController::class, 'ad'])->name('reports.meta_performance.ad');
+    Route::get('/reports/meta-performance', [\App\Http\Controllers\MetaPerformanceReportController::class, 'index'])->name('reports.meta_performance');
     Route::get('/reports/delivery-report', [ShipwayController::class, 'deliveryReport'])->name('shipway.reports.delivery');
 
 });
