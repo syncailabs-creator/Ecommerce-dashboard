@@ -39,6 +39,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/shopify-orders/{id}', [\App\Http\Controllers\ShopifyOrderController::class, 'show'])->name('shopify_orders.show');
     Route::get('/reports/payment-type', [\App\Http\Controllers\PaymentTypeReportController::class, 'index'])->name('reports.payment_type');
     Route::get('/reports/meta-performance', [\App\Http\Controllers\MetaPerformanceReportController::class, 'index'])->name('reports.meta_performance');
+    Route::get('/reports/delivery-classification', [\App\Http\Controllers\DeliveryClassificationReportController::class, 'index'])->name('reports.delivery_classification');
     Route::get('/reports/delivery-report', [ShipwayController::class, 'deliveryReport'])->name('shipway.reports.delivery');
 
 });

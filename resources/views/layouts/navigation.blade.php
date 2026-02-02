@@ -28,6 +28,9 @@
                     <x-nav-link :href="route('reports.meta_performance')" :active="request()->routeIs('reports.meta_performance')">
                         {{ __('Meta Performance Report') }}
                     </x-nav-link>
+                    <x-nav-link :href="route('reports.delivery_classification')" :active="request()->routeIs('reports.delivery_classification')">
+                        {{ __('Delivery Classification Report') }}
+                    </x-nav-link>
                 </div>
             </div>
 
@@ -88,6 +91,9 @@
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('reports.meta_performance')" :active="request()->routeIs('reports.meta_performance')">
                 {{ __('Meta Performance Report') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('reports.delivery_classification')" :active="request()->routeIs('reports.delivery_classification')">
+                {{ __('Delivery Classification Report') }}
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('reports.payment_type')" :active="request()->routeIs('reports.payment_type')">
                 {{ __('Payment Type Report') }}
