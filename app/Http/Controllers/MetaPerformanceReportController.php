@@ -38,7 +38,6 @@ class MetaPerformanceReportController extends Controller
             }
 
             $subQuery->select(
-                    DB::raw('DATE(o.order_date) as date'),
                     DB::raw($selectName),
                     DB::raw('COUNT(*) as total_count'),
                     DB::raw("SUM(CASE WHEN o.financial_status = 'paid' THEN 1 ELSE 0 END) as paid_count"),
@@ -73,8 +72,7 @@ class MetaPerformanceReportController extends Controller
                 }
             }
 
-            $subQuery->whereNotNull('o.order_date') 
-                ->groupBy(DB::raw('DATE(o.order_date)'), DB::raw($groupByCol));
+            $subQuery->groupBy(DB::raw($groupByCol));
 
             $query = DB::query()->fromSub($subQuery, 'performance_report');
 
@@ -82,12 +80,6 @@ class MetaPerformanceReportController extends Controller
                 ->addIndexColumn()
                 ->filterColumn('name', function($query, $keyword) {
                     $query->where('name', 'like', "%{$keyword}%");
-                })
-                ->filterColumn('date', function($query, $keyword) {
-                    $query->whereRaw("DATE_FORMAT(date, '%d-%m-%Y') like ?", ["%{$keyword}%"]);
-                })
-                ->editColumn('date', function($row){
-                    return \Carbon\Carbon::parse($row->date)->format('d-m-Y');
                 })
                 ->addColumn('total_percentage', function($row){
                     return '100%';

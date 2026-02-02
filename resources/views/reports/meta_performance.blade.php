@@ -57,7 +57,6 @@
                         <thead>
                             <tr class="bg-slate-50/50">
                                 <th class="py-4 px-4 text-xs font-bold uppercase tracking-wider text-slate-500 border-b border-slate-200">No</th>
-                                <th class="py-4 px-4 text-xs font-bold uppercase tracking-wider text-slate-500 border-b border-slate-200">Date</th>
                                 <th class="py-4 px-4 text-xs font-bold uppercase tracking-wider text-slate-500 border-b border-slate-200">
                                     @if($reportType == 'campaign') Campaign Name
                                     @elseif($reportType == 'adset') Ad Set Name
@@ -133,19 +132,12 @@
     <script type="text/javascript">
       $(function () {
         
-        // Setup - add a text input to each footer cell
-        $('.data-table thead tr')
-            .clone(true)
-            .addClass('filters')
-            .appendTo('.data-table thead');
-
         var table = $('.data-table').DataTable({
             processing: true,
             serverSide: true,
-            orderCellsTop: true,
             fixedHeader: true,
             pageLength: 30, 
-            order: [[1, "desc"]],
+            pageLength: 30,
             ajax: {
                 url: "{{ route('reports.meta_performance') }}?type={{ $reportType }}",
                 data: function(d) {
@@ -157,7 +149,6 @@
             },
             columns: [
                 {data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false},
-                {data: 'date', name: 'date'},
                 {data: 'name', name: 'name'}, // Generic name field
                 {data: 'total_percentage', name: 'total_percentage', orderable: false, searchable: false},
                 {data: 'total_count', name: 'total_count'},
@@ -168,45 +159,6 @@
                 {data: 'pending_percentage', name: 'pending_percentage', orderable: false, searchable: false},
                 {data: 'pending_count', name: 'pending_count'},
             ],
-            initComplete: function () {
-                var api = this.api();
-    
-                // For each column
-                api
-                    .columns()
-                    .eq(0)
-                    .each(function (colIdx) {
-                        // Set the header cell to contain the input element
-                        var cell = $('.filters th').eq(
-                            $(api.column(colIdx).header()).index()
-                        );
-                        var title = $(cell).text();
-                        
-                        // Skip 'No' column - clear it
-                        if (title == 'No' || title.includes('%')) {
-                             $(cell).html('');
-                             $(cell).css('border-bottom', 'none'); 
-                             return;
-                        }
-
-                        $(cell).html('<input type="text" placeholder="Filter..." style="width: 100%; border-radius: 4px; border: 1px solid #ddd; padding: 4px;" />');
-    
-                        // On every keypress in this input
-                        $('input', $('.filters th').eq($(api.column(colIdx).header()).index()))
-                            .off('keyup change')
-                            .on('keyup', function (e) {
-                                e.stopPropagation();
-                                $(this).trigger('change');
-                            })
-                            .on('change', function (e) {
-                                var val = $(this).val();
-                                api
-                                    .column(colIdx)
-                                    .search(val ? val : '', false, true)
-                                    .draw();
-                            });
-                    });
-            },
         });
 
         $('#report_type_filter').change(function(){
