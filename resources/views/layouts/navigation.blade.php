@@ -18,6 +18,9 @@
                     <x-nav-link :href="route('reports.payment_type')" :active="request()->routeIs('reports.payment_type')">
                         {{ __('Payment Type Report') }}
                     </x-nav-link>
+                    <x-nav-link :href="route('shipway.reports.delivery')" :active="request()->routeIs('shipway.reports.delivery')">
+                        {{ __('Delivery Report') }}
+                    </x-nav-link>
                     <x-nav-link :href="route('shopify_orders.index')" :active="request()->routeIs('shopify_orders.index')">
                         {{ __('Order Classification') }}
                     </x-nav-link>
@@ -118,6 +121,9 @@
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('reports.payment_type')" :active="request()->routeIs('reports.payment_type')">
                 {{ __('Payment Type Report') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('shipway.reports.delivery')" :active="request()->routeIs('shipway.reports.delivery')">
+                {{ __('Delivery Report') }}
             </x-responsive-nav-link>
         </div>
 

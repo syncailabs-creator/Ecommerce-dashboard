@@ -41,6 +41,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/reports/meta-performance/campaign', [\App\Http\Controllers\MetaPerformanceReportController::class, 'campaign'])->name('reports.meta_performance.campaign');
     Route::get('/reports/meta-performance/adset', [\App\Http\Controllers\MetaPerformanceReportController::class, 'adSet'])->name('reports.meta_performance.adset');
     Route::get('/reports/meta-performance/ad', [\App\Http\Controllers\MetaPerformanceReportController::class, 'ad'])->name('reports.meta_performance.ad');
+    Route::get('/reports/delivery-report', [ShipwayController::class, 'deliveryReport'])->name('shipway.reports.delivery');
 
 });
 
