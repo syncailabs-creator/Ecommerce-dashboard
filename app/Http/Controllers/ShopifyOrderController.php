@@ -20,6 +20,42 @@ class ShopifyOrderController extends Controller
                 ->leftJoin('meta_ads_campaign_masters', 'shopify_orders.utm_campaign', '=', 'meta_ads_campaign_masters.campaign_id')
                 ->leftJoin('meta_ads_set_masters', 'shopify_orders.utm_term', '=', 'meta_ads_set_masters.adset_id')
                 ->leftJoin('meta_ads_ad_masters', 'shopify_orders.utm_content', '=', 'meta_ads_ad_masters.ad_id');
+                
+            if ($request->has('date_filter') && $request->date_filter != 'All') {
+                switch ($request->date_filter) {
+                    case 'Today':
+                        $data->whereDate('order_date', \Carbon\Carbon::today());
+                        break;
+                    case 'Yesterday':
+                        $data->whereDate('order_date', \Carbon\Carbon::yesterday());
+                        break;
+                    case 'This Week':
+                         $data->whereBetween('order_date', [\Carbon\Carbon::now()->startOfWeek(), \Carbon\Carbon::now()->endOfWeek()]);
+                         break;
+                    case 'Last Week':
+                         $data->whereBetween('order_date', [\Carbon\Carbon::now()->subWeek()->startOfWeek(), \Carbon\Carbon::now()->subWeek()->endOfWeek()]);
+                         break;
+                    case 'Last 7 Days':
+                        $data->whereDate('order_date', '>=', \Carbon\Carbon::now()->subDays(7));
+                        break;
+                    case 'This Month':
+                        $data->whereMonth('order_date', \Carbon\Carbon::now()->month)
+                                 ->whereYear('order_date', \Carbon\Carbon::now()->year);
+                        break;
+                    case 'Last Month':
+                        $data->whereMonth('order_date', \Carbon\Carbon::now()->subMonth()->month)
+                                 ->whereYear('order_date', \Carbon\Carbon::now()->subMonth()->year);
+                        break;
+                    case 'This Year':
+                         $data->whereYear('order_date', \Carbon\Carbon::now()->year);
+                         break;
+                     case 'Custom':
+                         if($request->has('start_date') && $request->has('end_date')) {
+                             $data->whereBetween('order_date', [$request->start_date, $request->end_date]);
+                         }
+                         break;
+                }
+            }
 
             return DataTables::of($data)
                 ->addIndexColumn()

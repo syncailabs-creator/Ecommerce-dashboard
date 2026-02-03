@@ -28,6 +28,23 @@
                                 Manage and track all your incoming orders from Shopify in one place. Filter by status, date, or order ID to find exactly what you need.
                             </p> -->
                         </div>
+                        <div class="flex items-center gap-4">
+                            <select id="date_filter" class="rounded-lg border-slate-200 text-sm font-medium text-slate-700 focus:ring-primary-500 focus:border-primary-500 py-2 pl-3 pr-10">
+                                <option value="All">All Time</option>
+                                <option value="Today">Today</option>
+                                <option value="Yesterday">Yesterday</option>
+                                <option value="Last 7 Days">Last 7 Days</option>
+                                <option value="This Month">This Month</option>
+                                <option value="Last Month">Last Month</option>
+                                <option value="Custom">Custom Range</option>
+                            </select>
+                            
+                            <div id="custom_date_range" class="flex items-center gap-2 hidden">
+                                <input type="date" id="start_date" class="rounded-lg border-slate-200 text-sm font-medium text-slate-700 focus:ring-primary-500 focus:border-primary-500 py-2 px-3">
+                                <span class="text-slate-400">-</span>
+                                <input type="date" id="end_date" class="rounded-lg border-slate-200 text-sm font-medium text-slate-700 focus:ring-primary-500 focus:border-primary-500 py-2 px-3">
+                            </div>
+                        </div>
                         <!-- <div class="hidden md:flex items-center gap-3">
                              <button onclick="syncOrders()" id="syncBtn" class="inline-flex items-center gap-2 px-4 py-2 bg-slate-50 hover:bg-slate-100 rounded-lg border border-slate-100 text-slate-600 text-sm font-medium transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary-500">
                                 <svg id="syncIcon" class="w-5 h-5 text-primary-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -149,12 +166,6 @@
     <script type="text/javascript">
       $(function () {
         
-        // Setup - add a text input to each footer cell
-        $('.data-table thead tr')
-            .clone(true)
-            .addClass('filters')
-            .appendTo('.data-table thead');
-            
         var table = $('.data-table').DataTable({
             processing: true,
             serverSide: true,
@@ -166,6 +177,11 @@
                 type: 'POST',
                 headers: {
                     'X-CSRF-TOKEN': "{{ csrf_token() }}"
+                },
+                data: function (d) {
+                    d.date_filter = $('#date_filter').val();
+                    d.start_date = $('#start_date').val();
+                    d.end_date = $('#end_date').val();
                 }
             },
             columns: [
@@ -180,82 +196,22 @@
                 {data: 'adset_name', name: 'adset_name', sortable:false},
                 {data: 'ad_name', name: 'ad_name', sortable:false},
             ],
-            initComplete: function () {
-                var api = this.api();
-    
-                // For each column
-                api
-                    .columns()
-                    .eq(0)
-                    .each(function (colIdx) {
-                        // Set the header cell to contain the input element
-                        var cell = $('.filters th').eq(
-                            $(api.column(colIdx).header()).index()
-                        );
-                        var title = $(cell).text();
-                        
-                        // Skip 'No' column - clear it
-                        if (title == 'No') {
-                             $(cell).html('');
-                             $(cell).css('border-bottom', 'none'); // Clear border for cleaner look
-                             return;
-                        }
+        });
 
-                        // Special handling for Financial Status - Dropdown
-                        if (title == 'Financial Status') {
-                             var select = $('<select><option value="">All Status</option><option value="paid">Paid</option><option value="pending">Pending</option><option value="partially_paid">Partially Paid</option></select>')
-                                .appendTo( $(cell).empty() )
-                                .on( 'change', function () {
-                                    var val = $.fn.dataTable.util.escapeRegex(
-                                        $(this).val()
-                                    );
-             
-                                    api
-                                        .column( colIdx )
-                                        .search( val ? '^'+val+'$' : '', true, false )
-                                        .draw();
-                                } );
-                             return;
-                        }
-                        
-                        // Default Inputs
-                        var placeholder = 'Filter...';
-                        if(title == 'Order Date') placeholder = 'Date...';
-                        if(title == 'Total Price') placeholder = 'Price...';
+        $('#date_filter').change(function(){
+            var val = $(this).val();
+            if(val === 'Custom'){
+                $('#custom_date_range').removeClass('hidden');
+            } else {
+                $('#custom_date_range').addClass('hidden');
+                table.draw();
+            }
+        });
 
-                        $(cell).html('<input type="text" placeholder="' + placeholder + '" />');
-    
-                        // On every keypress in this input
-                        var $input = $('input', $('.filters th').eq($(api.column(colIdx).header()).index()));
-                        
-                        $input
-                            .off('keyup change')
-                            .on('keyup', function (e) {
-                                e.stopPropagation();
-                                var cursorPosition = this.selectionStart;
-                                
-                                $(this).trigger('change');
-                                
-                                $(this)
-                                    .focus()[0]
-                                    .setSelectionRange(cursorPosition, cursorPosition);
-                            })
-                            .on('change', function (e) {
-                                var val = $(this).val();
-                                $(this).attr('title', val);
-                                
-                                // Search the column
-                                api
-                                    .column(colIdx)
-                                    .search(
-                                        val ? val : '', 
-                                        false, 
-                                        true
-                                    )
-                                    .draw();
-                            });
-                    });
-            },
+        $('#start_date, #end_date').change(function(){
+            if($('#start_date').val() && $('#end_date').val()){
+                table.draw();
+            }
         });
         
       });

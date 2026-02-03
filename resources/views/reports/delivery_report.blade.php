@@ -150,12 +150,6 @@
         columns.push({data: 'total_percentage', name: 'total_percentage_end', orderable: false, searchable: false});
         columns.push({data: 'total_count', name: 'total_count_end'});
 
-        // Setup - add a text input to each footer cell
-        $('.data-table thead tr')
-            .clone(true)
-            .addClass('filters')
-            .appendTo('.data-table thead');
-
         var table = $('.data-table').DataTable({
             processing: true,
             serverSide: true,
@@ -177,45 +171,6 @@
                 }
             },
             columns: columns,
-            initComplete: function () {
-                var api = this.api();
-    
-                // For each column
-                api
-                    .columns()
-                    .eq(0)
-                    .each(function (colIdx) {
-                        // Set the header cell to contain the input element
-                        var cell = $('.filters th').eq(
-                            $(api.column(colIdx).header()).index()
-                        );
-                        var title = $(cell).text();
-                        
-                        // Skip 'No' column - clear it
-                        if (title == 'No' || title.includes('%')) {
-                             $(cell).html('');
-                             $(cell).css('border-bottom', 'none'); 
-                             return;
-                        }
-
-                        $(cell).html('<input type="text" placeholder="Filter..." style="width: 100%; border-radius: 4px; border: 1px solid #ddd; padding: 4px;" />');
-    
-                        // On every keypress in this input
-                        $('input', $('.filters th').eq($(api.column(colIdx).header()).index()))
-                            .off('keyup change')
-                            .on('keyup', function (e) {
-                                e.stopPropagation();
-                                $(this).trigger('change');
-                            })
-                            .on('change', function (e) {
-                                var val = $(this).val();
-                                api
-                                    .column(colIdx)
-                                    .search(val ? val : '', false, true)
-                                    .draw();
-                            });
-                    });
-            },
         });
 
         $('#filter_order_type').change(function(){

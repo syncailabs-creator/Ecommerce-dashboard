@@ -20,8 +20,45 @@ class PaymentTypeReportController extends Controller
                     DB::raw("SUM(CASE WHEN financial_status = 'partially_paid' THEN 1 ELSE 0 END) as partially_paid_count"),
                     DB::raw("SUM(CASE WHEN financial_status = 'pending' THEN 1 ELSE 0 END) as pending_count")
                 )
-                ->whereNotNull('order_date')
-                ->groupBy(DB::raw('DATE(order_date)'));
+                ->whereNotNull('order_date');
+                
+            if ($request->has('date_filter') && $request->date_filter != 'All') {
+                switch ($request->date_filter) {
+                    case 'Today':
+                        $subQuery->whereDate('order_date', Carbon::today());
+                        break;
+                    case 'Yesterday':
+                        $subQuery->whereDate('order_date', Carbon::yesterday());
+                        break;
+                    case 'This Week':
+                         $subQuery->whereBetween('order_date', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()]);
+                         break;
+                    case 'Last Week':
+                         $subQuery->whereBetween('order_date', [Carbon::now()->subWeek()->startOfWeek(), Carbon::now()->subWeek()->endOfWeek()]);
+                         break;
+                    case 'Last 7 Days':
+                        $subQuery->whereDate('order_date', '>=', Carbon::now()->subDays(7));
+                        break;
+                    case 'This Month':
+                        $subQuery->whereMonth('order_date', Carbon::now()->month)
+                                 ->whereYear('order_date', Carbon::now()->year);
+                        break;
+                    case 'Last Month':
+                        $subQuery->whereMonth('order_date', Carbon::now()->subMonth()->month)
+                                 ->whereYear('order_date', Carbon::now()->subMonth()->year);
+                        break;
+                    case 'This Year':
+                         $subQuery->whereYear('order_date', Carbon::now()->year);
+                         break;
+                     case 'Custom':
+                         if($request->has('start_date') && $request->has('end_date')) {
+                             $subQuery->whereBetween('order_date', [$request->start_date, $request->end_date]);
+                         }
+                         break;
+                }
+            }
+
+            $subQuery->groupBy(DB::raw('DATE(order_date)'));
 
             $query = DB::query()->fromSub($subQuery, 'daily_report');
 
