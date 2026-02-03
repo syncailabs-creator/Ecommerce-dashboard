@@ -32,15 +32,15 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-    Route::get('/shopify-orders', [\App\Http\Controllers\ShopifyOrderController::class, 'index'])->name('shopify_orders.index');
+    Route::any('/shopify-orders', [\App\Http\Controllers\ShopifyOrderController::class, 'index'])->name('shopify_orders.index');
     Route::post('/shopify-orders/sync', [\App\Http\Controllers\ShopifyOrderController::class, 'sync'])->name('shopify_orders.sync');
 
     Route::get('/shopify-orders/export', [\App\Http\Controllers\ShopifyOrderController::class, 'export'])->name('shopify_orders.export');
     Route::get('/shopify-orders/{id}', [\App\Http\Controllers\ShopifyOrderController::class, 'show'])->name('shopify_orders.show');
-    Route::get('/reports/payment-type', [\App\Http\Controllers\PaymentTypeReportController::class, 'index'])->name('reports.payment_type');
-    Route::get('/reports/meta-performance', [\App\Http\Controllers\MetaPerformanceReportController::class, 'index'])->name('reports.meta_performance');
-    Route::get('/reports/delivery-classification', [\App\Http\Controllers\DeliveryClassificationReportController::class, 'index'])->name('reports.delivery_classification');
-    Route::get('/reports/delivery-report', [ShipwayController::class, 'deliveryReport'])->name('shipway.reports.delivery');
+    Route::any('/reports/payment-type', [\App\Http\Controllers\PaymentTypeReportController::class, 'index'])->name('reports.payment_type');
+    Route::any('/reports/meta-performance', [\App\Http\Controllers\MetaPerformanceReportController::class, 'index'])->name('reports.meta_performance');
+    Route::any('/reports/delivery-classification', [\App\Http\Controllers\DeliveryClassificationReportController::class, 'index'])->name('reports.delivery_classification');
+    Route::any('/reports/delivery-report', [ShipwayController::class, 'deliveryReport'])->name('shipway.reports.delivery');
 
 });
 

@@ -117,7 +117,13 @@
             fixedHeader: true,
             pageLength: 30, // Default pagination
             order: [[1, "desc"]], // Default sort by Date (column 1) descending
-            ajax: "{{ route('reports.payment_type') }}",
+            ajax: {
+                url: "{{ route('reports.payment_type') }}",
+                type: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': "{{ csrf_token() }}"
+                }
+            },
             columns: [
                 {data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false},
                 {data: 'date', name: 'date'},

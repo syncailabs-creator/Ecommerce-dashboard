@@ -165,6 +165,10 @@
             order: [[1, "desc"]], // Default sort by Date (column 1) descending
             ajax: {
                 url: "{{ route('shipway.reports.delivery') }}",
+                type: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': "{{ csrf_token() }}"
+                },
                 data: function (d) {
                     d.filter_order_type = $('#filter_order_type').val();
                     d.date_filter = $('#date_filter').val();

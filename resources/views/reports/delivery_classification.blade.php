@@ -156,6 +156,10 @@
             pageLength: 30, 
             ajax: {
                 url: "{{ route('reports.delivery_classification') }}?type={{ $reportType }}",
+                type: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': "{{ csrf_token() }}"
+                },
                 data: function(d) {
                     d.type = "{{ $reportType }}";
                     d.date_filter = $('#date_filter').val();

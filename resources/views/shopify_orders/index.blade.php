@@ -161,7 +161,13 @@
             orderCellsTop: true,
             fixedHeader: true,
             order: [[1, "desc"]], // Default sort by Order Date (Column 1)
-            ajax: "{{ route('shopify_orders.index') }}",
+            ajax: {
+                url: "{{ route('shopify_orders.index') }}",
+                type: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': "{{ csrf_token() }}"
+                }
+            },
             columns: [
                 {data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false},
                 // {data: 'order_id', name: 'order_id'},
