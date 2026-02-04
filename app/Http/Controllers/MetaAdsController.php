@@ -17,6 +17,7 @@ class MetaAdsController extends Controller
 {
     public function fetchCampaigns()
     {
+        set_time_limit(3000);
         try {
             $accounts = MetaAdsAccount::all();
             $accessToken = config('services.meta_ads.access_token');
@@ -113,6 +114,7 @@ class MetaAdsController extends Controller
 
     public function fetchAdSets()
     {
+        set_time_limit(3000);
         try {
             $accounts = MetaAdsAccount::all();
             $accessToken = config('services.meta_ads.access_token');
@@ -214,6 +216,7 @@ class MetaAdsController extends Controller
 
     public function fetchAds()
     {
+        set_time_limit(3000);
         try {
             $accounts = MetaAdsAccount::all();
             $accessToken = config('services.meta_ads.access_token');

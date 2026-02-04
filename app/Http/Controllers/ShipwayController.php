@@ -162,6 +162,7 @@ class ShipwayController extends Controller
 
     public function fetchOrders()
     {
+        set_time_limit(3000);
         $username = config('services.shipway.username');
         $password = config('services.shipway.password');
 
