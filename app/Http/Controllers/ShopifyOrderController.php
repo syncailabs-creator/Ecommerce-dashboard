@@ -287,12 +287,11 @@ class ShopifyOrderController extends Controller
     }
 
     public function fetchRecent(Request $request) {
-        set_time_limit(300);
+        set_time_limit(3000);
 
         $shop = config('services.shopify.domain');
         $version = config('services.shopify.api_version', '2025-01');
         $accessToken = config('services.shopify.access_token');
-        
         // Sync last 15 minutes
         $createdAtMin = \Carbon\Carbon::now()->subMinutes(15)->toIso8601String();
         
