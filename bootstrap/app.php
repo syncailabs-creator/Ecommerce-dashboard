@@ -18,6 +18,7 @@ return Application::configure(basePath: dirname(__DIR__))
             '/meta-ads/fetch-campaigns',
             '/meta-ads/fetch-adsets',
             '/meta-ads/fetch-ads',
+            '/job-fire',
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

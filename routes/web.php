@@ -12,6 +12,11 @@ Route::get('clear', function () {
     Artisan::call('storage:link');
     return "Cleared!";
 });
+
+Route::get('job-fire', function () {
+    Artisan::call('queue:work --stop-when-empty');
+    return "Jobs Processed!";
+});
 Route::get('/', function () {
     return view('welcome');
 });
