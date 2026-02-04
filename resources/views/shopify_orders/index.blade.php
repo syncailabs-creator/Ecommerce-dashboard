@@ -171,6 +171,7 @@
             serverSide: true,
             orderCellsTop: true,
             fixedHeader: true,
+            pageLength: 30,
             order: [[1, "desc"]], // Default sort by Order Date (Column 1)
             ajax: {
                 url: "{{ route('shopify_orders.index') }}",
