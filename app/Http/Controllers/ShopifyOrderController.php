@@ -288,13 +288,13 @@ class ShopifyOrderController extends Controller
 
     public function fetchRecent(Request $request) {
         set_time_limit(3000);
-
+        \Log::info('Fetching recent orders from Shopify (Last 60 mins)...');
         $shop = config('services.shopify.domain');
         $version = config('services.shopify.api_version', '2025-01');
         $accessToken = config('services.shopify.access_token');
         
         // Sync last 15 minutes
-        $createdAtMin = \Carbon\Carbon::now()->subMinutes(15)->toIso8601String();
+        $createdAtMin = \Carbon\Carbon::now()->subMinutes(500)->toIso8601String();
         
         $url = "https://{$shop}/admin/api/{$version}/orders.json?status=any&limit=250&created_at_min={$createdAtMin}";
 
@@ -316,10 +316,6 @@ class ShopifyOrderController extends Controller
                     $totalProcessed += $count;
                     
                     if ($count > 0) {
-                        $upsertData = [];
-                        $shopifyOrderIds = [];
-                        $now = now();
-
                         foreach ($orders as $data) {
                             $utmTerm = null;
                             $utmContent = null;
@@ -337,156 +333,35 @@ class ShopifyOrderController extends Controller
                                 }
                             }
 
-                            $upsertData[] = [
-                                'order_id' => $data['id'],
-                                'name' => str_replace('#', '', $data['name']),
-                                'total_price' => $data['total_price'],
-                                'financial_status' => $data['financial_status'],
-                                'utm_term' => $utmTerm,
-                                'utm_content' => $utmContent,
-                                'utm_campaign' => $utmCampaign,
-                                'tags' => $data['tags'],
-                                'order_date' => isset($data['created_at']) ? \Carbon\Carbon::parse($data['created_at']) : null,
-                                'created_at' => $now,
-                                'updated_at' => $now,
-                            ];
-                            $shopifyOrderIds[] = $data['id'];
-                        }
+                            // Match by NAME as requested
+                            $cleanName = str_replace('#', '', $data['name']);
 
-                        \Illuminate\Support\Facades\DB::transaction(function() use ($upsertData, $shopifyOrderIds, $orders, $now) {
-                            // Bulk Upsert Orders
-                            \App\Models\ShopifyOrder::upsert(
-                                $upsertData,
-                                ['order_id'],
-                                ['name', 'total_price', 'financial_status', 'utm_term', 'utm_content', 'utm_campaign', 'tags', 'order_date', 'updated_at']
+                            $order = \App\Models\ShopifyOrder::updateOrCreate(
+                                ['name' => $cleanName], 
+                                [
+                                    'order_id' => $data['id'],
+                                    'total_price' => $data['total_price'],
+                                    'financial_status' => $data['financial_status'],
+                                    'utm_term' => $utmTerm,
+                                    'utm_content' => $utmContent,
+                                    'utm_campaign' => $utmCampaign,
+                                    'tags' => $data['tags'],
+                                    'order_date' => isset($data['created_at']) ? \Carbon\Carbon::parse($data['created_at']) : null,
+                                ]
                             );
 
-                            // Fetch Local IDs mapping
-                            $savedOrders = \App\Models\ShopifyOrder::whereIn('order_id', $shopifyOrderIds)
-                                ->pluck('id', 'order_id');
-
-                            $productsData = [];
-                            $localIdsToClean = $savedOrders->values()->toArray();
-
-                            foreach ($orders as $data) {
-                                // Important: Check if line_items exists
-                                if (!isset($data['line_items']) || !is_array($data['line_items'])) continue;
-                                
-                                $remoteId = $data['id'];
-                                if (!isset($savedOrders[$remoteId])) continue;
-                                
-                                $localId = $savedOrders[$remoteId];
-
+                            // Handle Line Items
+                            if (isset($data['line_items']) && is_array($data['line_items'])) {
+                                \App\Models\ShopifyOrderProduct::where('shopify_order_id', $order->id)->delete();
+                    
                                 foreach ($data['line_items'] as $item) {
-                                    $productsData[] = [
-                                        'shopify_order_id' => $localId,
+                                    \App\Models\ShopifyOrderProduct::create([
+                                        'shopify_order_id' => $order->id,
                                         'name' => $item['name'],
                                         'price' => $item['price'],
-                                        'created_at' => $now,
-                                        'updated_at' => $now,
-                                    ];
+                                        'created_at' => now(),
+                                    ]);
                                 }
-                            }
-
-                            if (!empty($localIdsToClean)) {
-                                \App\Models\ShopifyOrderProduct::whereIn('shopify_order_id', $localIdsToClean)->delete();
-                            }
-
-                            if (!empty($productsData)) {
-                                foreach (array_chunk($productsData, 500) as $chunk) {
-                                    \App\Models\ShopifyOrderProduct::insert($chunk);
-                                }
-                            }
-                        });
-                    }
-
-                    $linkHeader = $response->header('Link');
-                    if ($linkHeader && preg_match('/<([^>]+)>;\s*rel="next"/', $linkHeader, $matches)) {
-                        $url = $matches[1];
-                    } else {
-                        $url = null;
-                    }
-
-                } else {
-                    return response()->json(['success' => false, 'message' => 'Shopify API Error: ' . $response->status()], 500);
-                }
-            } while ($url);
-
-            return response()->json(['success' => true, 'message' => "Synced successfully. Processed $totalProcessed orders (Last 15 Mins)."]);
-
-        } catch (\Exception $e) {
-            return response()->json(['success' => false, 'message' => 'Exception: ' . $e->getMessage()], 500);
-        }
-    }
-
-    public function fetchRecentOld(Request $request) {
-        set_time_limit(3000);
-
-        $shop = config('services.shopify.domain');
-        $version = config('services.shopify.api_version', '2025-01');
-        $accessToken = config('services.shopify.access_token');
-        // Sync last 15 minutes
-        $createdAtMin = \Carbon\Carbon::now()->subMinutes(15)->toIso8601String();
-        
-        $url = "https://{$shop}/admin/api/{$version}/orders.json?status=any&limit=250&created_at_min={$createdAtMin}";
-
-        if (!$shop || !$accessToken) {
-            return response()->json(['success' => false, 'message' => 'Shopify credentials missing.'], 500);
-        }
-
-        try {
-            $totalProcessed = 0;
-            do {
-                $response = \Illuminate\Support\Facades\Http::withoutVerifying()->withHeaders([
-                    'X-Shopify-Access-Token' => $accessToken,
-                    'Content-Type' => 'application/json',
-                ])->get($url);
-
-                if ($response->successful()) {
-                    $orders = $response->json()['orders'] ?? [];
-                    $totalProcessed += count($orders);
-                    
-                    foreach ($orders as $data) {
-                        $utmTerm = null;
-                        $utmContent = null;
-                        $utmCampaign = null;
-                
-                        if (isset($data['note_attributes']) && is_array($data['note_attributes'])) {
-                            foreach ($data['note_attributes'] as $attr) {
-                                if ($attr['name'] === 'utm_term') {
-                                    $utmTerm = $attr['value'];
-                                } elseif ($attr['name'] === 'utm_content') {
-                                    $utmContent = $attr['value'];
-                                } elseif ($attr['name'] === 'utm_campaign') {
-                                    $utmCampaign = $attr['value'];
-                                }
-                            }
-                        }
-
-                        $order = \App\Models\ShopifyOrder::updateOrCreate(
-                            ['order_id' => $data['id']],
-                            [
-                                'name' => str_replace('#', '', $data['name']),
-                                'total_price' => $data['total_price'],
-                                'financial_status' => $data['financial_status'],
-                                'utm_term' => $utmTerm,
-                                'utm_content' => $utmContent,
-                                'utm_campaign' => $utmCampaign,
-                                'tags' => $data['tags'],
-                                'order_date' => isset($data['created_at']) ? \Carbon\Carbon::parse($data['created_at']) : null,
-                            ]
-                        );
-
-                        if (isset($data['line_items']) && is_array($data['line_items'])) {
-                            \App\Models\ShopifyOrderProduct::where('shopify_order_id', $order->id)->delete();
-                
-                            foreach ($data['line_items'] as $item) {
-                                \App\Models\ShopifyOrderProduct::create([
-                                    'shopify_order_id' => $order->id,
-                                    'name' => $item['name'],
-                                    'price' => $item['price'],
-                                    'created_at' => now(),
-                                ]);
                             }
                         }
                     }
@@ -502,6 +377,7 @@ class ShopifyOrderController extends Controller
                     return response()->json(['success' => false, 'message' => 'Shopify API Error: ' . $response->status()], 500);
                 }
             } while ($url);
+        \Log::info("Synced successfully. Processed $totalProcessed orders (Last 60 Mins).");
 
             return response()->json(['success' => true, 'message' => "Synced successfully. Processed $totalProcessed orders (Last 15 Mins)."]);
 
@@ -509,5 +385,6 @@ class ShopifyOrderController extends Controller
             return response()->json(['success' => false, 'message' => 'Exception: ' . $e->getMessage()], 500);
         }
     }
+
 
 }
