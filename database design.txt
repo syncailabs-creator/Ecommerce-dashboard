@@ -33,6 +33,10 @@ admin@example.com
 password
 
 
+*/15 * * * *	wget -q -O /dev/null https://automation.drveda.in/meta-ads/fetch-campaigns
+*/15 * * * *	wget -q -O /dev/null https://automation.drveda.in/meta-ads/fetch-adsets
+*/15 * * * *	wget -q -O /dev/null https://automation.drveda.in/meta-ads/fetch-ads
+
 
 shopify_orders
 
