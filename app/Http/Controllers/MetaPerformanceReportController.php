@@ -66,7 +66,7 @@ class MetaPerformanceReportController extends Controller
                         break;
                      case 'Custom':
                          if($request->has('start_date') && $request->has('end_date')) {
-                             $subQuery->whereBetween('o.order_date', [$request->start_date, $request->end_date]);
+                             $subQuery->whereBetween('o.order_date', [$request->start_date, \Carbon\Carbon::parse($request->end_date)->endOfDay()]);
                          }
                          break;
                 }

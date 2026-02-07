@@ -52,7 +52,7 @@ class PaymentTypeReportController extends Controller
                          break;
                      case 'Custom':
                          if($request->has('start_date') && $request->has('end_date')) {
-                             $subQuery->whereBetween('order_date', [$request->start_date, $request->end_date]);
+                             $subQuery->whereBetween('order_date', [$request->start_date, Carbon::parse($request->end_date)->endOfDay()]);
                          }
                          break;
                 }
