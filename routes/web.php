@@ -31,6 +31,9 @@ Route::get('/meta-ads/fetch-campaigns', [\App\Http\Controllers\MetaAdsController
 Route::get('/meta-ads/fetch-adsets', [\App\Http\Controllers\MetaAdsController::class, 'fetchAdSets'])->name('meta_ads.fetch_adsets');
 Route::get('/meta-ads/fetch-ads', [\App\Http\Controllers\MetaAdsController::class, 'fetchAds'])->name('meta_ads.fetch_ads');
 
+Route::get('/meta-ads/fetch-previous-campaigns', [\App\Http\Controllers\MetaAdsController::class, 'fetchPreviousCampaigns'])->name('meta_ads.fetch_previous_campaigns');
+Route::get('/meta-ads/fetch-previous-adsets', [\App\Http\Controllers\MetaAdsController::class, 'fetchPreviousAdSets'])->name('meta_ads.fetch_previous_adsets');
+Route::get('/meta-ads/fetch-previous-ads', [\App\Http\Controllers\MetaAdsController::class, 'fetchPreviousAds'])->name('meta_ads.fetch_previous_ads');
 
 
 Route::middleware('auth')->group(function () {
@@ -52,4 +55,3 @@ Route::middleware('auth')->group(function () {
 require __DIR__.'/auth.php';
 
 Route::any('/shipway/webhook', [ShipwayController::class, 'handleWebhook']);
-
