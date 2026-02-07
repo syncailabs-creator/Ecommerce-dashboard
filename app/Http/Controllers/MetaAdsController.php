@@ -27,7 +27,7 @@ class MetaAdsController extends Controller
             }
 
             foreach ($accounts as $account) {
-                $url = "https://graph.facebook.com/v19.0/{$account->account_id}/insights";
+                $url = "https://graph.facebook.com/v24.0/{$account->account_id}/insights";
 
                 $response = Http::withoutVerifying()->get($url, [
                     'level' => 'campaign',
@@ -134,7 +134,7 @@ class MetaAdsController extends Controller
             }
 
             foreach ($accounts as $account) {
-                $url = "https://graph.facebook.com/v19.0/{$account->account_id}/insights";
+                $url = "https://graph.facebook.com/v24.0/{$account->account_id}/insights";
 
                 $response = Http::withoutVerifying()->get($url, [
                     'level' => 'adset',
@@ -246,7 +246,7 @@ class MetaAdsController extends Controller
             }
 
             foreach ($accounts as $account) {
-                $url = "https://graph.facebook.com/v19.0/{$account->account_id}/insights";
+                $url = "https://graph.facebook.com/v24.0/{$account->account_id}/insights";
 
                 $response = Http::withoutVerifying()->get($url, [
                     'level' => 'ad',
@@ -358,7 +358,7 @@ class MetaAdsController extends Controller
             }
 
             foreach ($accounts as $account) {
-                $url = "https://graph.facebook.com/v19.0/{$account->account_id}/insights";
+                $url = "https://graph.facebook.com/v24.0/{$account->account_id}/insights";
 
                 $response = Http::withoutVerifying()->get($url, [
                     'level' => 'campaign',
@@ -467,7 +467,7 @@ class MetaAdsController extends Controller
             }
 
             foreach ($accounts as $account) {
-                $url = "https://graph.facebook.com/v19.0/{$account->account_id}/insights";
+                $url = "https://graph.facebook.com/v24.0/{$account->account_id}/insights";
 
                 $response = Http::withoutVerifying()->get($url, [
                     'level' => 'adset',
@@ -581,7 +581,7 @@ class MetaAdsController extends Controller
             }
 
             foreach ($accounts as $account) {
-                $url = "https://graph.facebook.com/v19.0/{$account->account_id}/insights";
+                $url = "https://graph.facebook.com/v24.0/{$account->account_id}/insights";
 
                 $response = Http::withoutVerifying()->get($url, [
                     'level' => 'ad',
@@ -677,6 +677,64 @@ class MetaAdsController extends Controller
 
         } catch (\Exception $e) {
             Log::error("Error in fetchPreviousAds: " . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'An error occurred: ' . $e->getMessage()], 500);
+        }
+    }
+
+    public function fetchAdAccounts()
+    {
+        set_time_limit(3000);
+        try {
+            $accessToken = config('services.meta_ads.access_token');
+
+            if (!$accessToken) {
+                return response()->json(['success' => false, 'message' => 'Meta Access Token not found in .env'], 500);
+            }
+
+            $url = "https://graph.facebook.com/v24.0/me/adaccounts";
+            $response = Http::withoutVerifying()->get($url, [
+                'fields' => 'id,name,account_status,currency,timezone_name,amount_spent',
+                'access_token' => $accessToken,
+                'limit' => 500
+            ]);
+
+            if ($response->successful()) {
+                $data = $response->json()['data'] ?? [];
+                $updatedCount = 0;
+
+                foreach ($data as $accountData) {
+                    $accountId = $accountData['id'];
+
+                    // Find existing account by account_id
+                    $account = MetaAdsAccount::where('account_id', $accountId)->first();
+
+                    if ($account) {
+                        $account->update([
+                            'name' => $accountData['name'] ?? $account->name,
+                            'account_status' => $accountData['account_status'] ?? $account->account_status,
+                            'currency' => $accountData['currency'] ?? $account->currency,
+                            'timezone_name' => $accountData['timezone_name'] ?? $account->timezone_name,
+                            'amount_spent' => $accountData['amount_spent'] ?? $account->amount_spent,
+                        ]);
+                        $updatedCount++;
+                    }
+                }
+
+                return response()->json([
+                    'success' => true,
+                    'message' => "Meta Ad Accounts synced successfully. Updated {$updatedCount} accounts."
+                ]);
+            } else {
+                Log::error("Failed to fetch Ad Accounts: " . $response->body());
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Failed to fetch Ad Accounts from Meta.',
+                    'error' => $response->body()
+                ], 500);
+            }
+
+        } catch (\Exception $e) {
+            Log::error("Error in fetchAdAccounts: " . $e->getMessage());
             return response()->json(['success' => false, 'message' => 'An error occurred: ' . $e->getMessage()], 500);
         }
     }

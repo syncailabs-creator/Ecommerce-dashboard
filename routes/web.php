@@ -34,6 +34,8 @@ Route::get('/meta-ads/fetch-ads', [\App\Http\Controllers\MetaAdsController::clas
 Route::get('/meta-ads/fetch-previous-campaigns', [\App\Http\Controllers\MetaAdsController::class, 'fetchPreviousCampaigns'])->name('meta_ads.fetch_previous_campaigns');
 Route::get('/meta-ads/fetch-previous-adsets', [\App\Http\Controllers\MetaAdsController::class, 'fetchPreviousAdSets'])->name('meta_ads.fetch_previous_adsets');
 Route::get('/meta-ads/fetch-previous-ads', [\App\Http\Controllers\MetaAdsController::class, 'fetchPreviousAds'])->name('meta_ads.fetch_previous_ads');
+    
+Route::get('/meta-ads/fetch-accounts', [\App\Http\Controllers\MetaAdsController::class, 'fetchAdAccounts'])->name('meta_ads.fetch_accounts');
 
 
 Route::middleware('auth')->group(function () {

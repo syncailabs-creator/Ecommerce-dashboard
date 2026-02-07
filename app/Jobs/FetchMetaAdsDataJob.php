@@ -50,10 +50,11 @@ class FetchMetaAdsDataJob implements ShouldQueue
             return;
         }
 
-        $accounts = MetaAdsAccount::all();
+        // $accounts = MetaAdsAccount::all();
+        $accounts = MetaAdsAccount::where('account_id', 'act_1554426265636855')->get();
 
         foreach ($accounts as $account) {
-            $url = "https://graph.facebook.com/v19.0/{$account->account_id}/insights";
+            $url = "https://graph.facebook.com/v24.0/{$account->account_id}/insights";
             
             // Define fields based on level
             $fields = '';

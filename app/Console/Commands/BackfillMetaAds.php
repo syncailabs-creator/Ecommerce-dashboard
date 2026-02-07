@@ -27,7 +27,7 @@ class BackfillMetaAds extends Command
      */
     public function handle()
     {
-        $startDate = Carbon::create(2026, 1, 1);
+        $startDate = Carbon::create(2026, 1, 29);
         $endDate = Carbon::now();
 
         $this->info("Dispatching Meta Ads backfill jobs from {$startDate->toDateString()} to {$endDate->toDateString()}...");
