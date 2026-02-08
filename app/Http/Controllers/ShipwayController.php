@@ -264,5 +264,37 @@ class ShipwayController extends Controller
                 ]);
             }
         }
+
+        if (isset($data['shipment_status_scan']) && is_array($data['shipment_status_scan'])) {
+            ShipwayOrderStatus::where('shipway_order_id', $order->order_id)->forceDelete();
+
+            foreach ($data['shipment_status_scan'] as $item) {
+
+                $orderStatus = isset($item['status']) ? strtoupper(str_replace(' ', '_', $item['status'])) : null;
+                
+                if($orderStatus) {
+                    $existingStatus = ShipwayOrderStatus::where('shipway_order_id', $order->order_id)
+                        ->where('status', $orderStatus)
+                        ->first();
+
+                    if ($existingStatus) {
+               
+                        $existingStatus->update([
+                            'updated_datetime' =>  $item['datetime'],
+                            'updated_at' => now()
+                        ]);
+                        
+                    } else {
+                        ShipwayOrderStatus::create([
+                            'shipway_order_id' => $order->order_id,
+                            'status' => $orderStatus,
+                            'datetime' =>  $item['datetime'],
+                            'updated_datetime' =>  $item['datetime'],
+                        ]);
+                    }
+                }
+            }
+        }
+        
     }
 }

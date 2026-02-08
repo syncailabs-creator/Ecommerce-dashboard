@@ -103,6 +103,7 @@ class FetchShipwayOrdersJob implements ShouldQueue
 
         $orderDate = isset($data['order_date']) ? Carbon::parse($data['order_date']) : null;
         
+        // Use transaction to ensure data integrity
         DB::transaction(function () use ($data, $orderDate) {
             $order = ShipwayOrder::updateOrCreate(
                 ['order_id' => $data['order_id']], 
@@ -135,6 +136,34 @@ class FetchShipwayOrdersJob implements ShouldQueue
                         'price' => $item['price'] ?? null,
                         'amount' => $item['amount'] ?? null,
                     ]);
+                }
+            }
+
+            if (isset($data['shipment_status_scan']) && is_array($data['shipment_status_scan'])) {
+                // We do NOT forceDelete here anymore to support updates, matching the intended logic
+                foreach ($data['shipment_status_scan'] as $item) {
+
+                    $orderStatus = isset($item['status']) ? strtoupper(str_replace(' ', '_', $item['status'])) : null;
+                    
+                    if($orderStatus) {
+                        $existingStatus = ShipwayOrderStatus::where('shipway_order_id', $order->order_id)
+                            ->where('status', $orderStatus)
+                            ->first();
+
+                        if ($existingStatus) {
+                            $existingStatus->update([
+                                'updated_datetime' =>  $item['datetime'] ?? null, // Use $item['datetime'] if available
+                                'updated_at' => now()
+                            ]);
+                        } else {
+                            ShipwayOrderStatus::create([
+                                'shipway_order_id' => $order->order_id,
+                                'status' => $orderStatus,
+                                'datetime' =>  $item['datetime'] ?? null,
+                                'updated_datetime' =>  $item['datetime'] ?? null,
+                            ]);
+                        }
+                    }
                 }
             }
         });
