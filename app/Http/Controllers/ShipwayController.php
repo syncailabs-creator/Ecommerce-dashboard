@@ -27,10 +27,11 @@ class ShipwayController extends Controller
             ];
 
             foreach ($statuses as $status) {
-                $safeStatus = addslashes($status);
+                // Use formatted status for comparison
+                $formattedStatus = strtoupper(str_replace(' ', '_', $status));
                 // Use a safe column name (lowercase, underscores)
                 $colName = str_replace(' ', '_', strtolower($status));
-                $selects[] = DB::raw("SUM(CASE WHEN shipway_orders.shipment_status_name = '$safeStatus' THEN 1 ELSE 0 END) as {$colName}_count");
+                $selects[] = DB::raw("SUM(CASE WHEN shipway_orders.shipment_status_name = '$formattedStatus' THEN 1 ELSE 0 END) as {$colName}_count");
             }
 
             // Start from shipway_orders, join shopify for date and tags

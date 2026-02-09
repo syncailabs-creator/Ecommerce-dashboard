@@ -48,10 +48,10 @@ class DeliveryClassificationReportController extends Controller
             ];
 
             foreach ($statuses as $status) {
-                $safeStatus = addslashes($status);
+                $formattedStatus = strtoupper(str_replace(' ', '_', $status));
                 $colName = str_replace(' ', '_', strtolower($status));
                 // Note: counting based on shipway_orders shipment_status_name
-                $selects[] = DB::raw("SUM(CASE WHEN so.shipment_status_name = '$safeStatus' THEN 1 ELSE 0 END) as {$colName}_count");
+                $selects[] = DB::raw("SUM(CASE WHEN so.shipment_status_name = '$formattedStatus' THEN 1 ELSE 0 END) as {$colName}_count");
             }
             
             $subQuery->select($selects);
