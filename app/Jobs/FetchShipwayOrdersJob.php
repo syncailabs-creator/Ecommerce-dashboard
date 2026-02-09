@@ -120,7 +120,7 @@ class FetchShipwayOrdersJob implements ShouldQueue
                     's_zipcode' => $data['s_zipcode'] ?? null,
                     'tracking_number' => $data['tracking_number'] ?? null,
                     'shipment_status' => $data['shipment_status'] ?? null,
-                    'shipment_status_name' => $data['shipment_status_name'] ?? null,
+                    'shipment_status_name' => isset($data['shipment_status_name']) ? strtoupper(str_replace(' ', '_', $data['shipment_status_name'])) : null,
                     'order_date' => $orderDate,
                 ]
             );

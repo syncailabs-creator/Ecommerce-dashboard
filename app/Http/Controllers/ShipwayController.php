@@ -130,25 +130,34 @@ class ShipwayController extends Controller
         if ($order) {
             Log::info("Order found in Shipway orders: " . $orderId);
             
-            $orderStatus = $request->input('new_current_status');
+            $rawStatus = $request->input('new_current_status');
+            $orderStatus = $rawStatus ? strtoupper(str_replace(' ', '_', $rawStatus)) : null;
 
-            $existingStatus = ShipwayOrderStatus::where('shipway_order_id', $orderId)
-                ->where('status', $orderStatus)
-                ->first();
-
-            if ($existingStatus) {
-               
-                $existingStatus->update([
-                    'updated_datetime' =>  $request->input('status_time'),
+            if ($orderStatus) {
+                // Update the main order status
+                $order->update([
+                    'shipment_status_name' => $orderStatus,
                     'updated_at' => now()
                 ]);
-            } else {                
-                ShipwayOrderStatus::create([
-                    'shipway_order_id' => $orderId,
-                    'status' => $orderStatus,
-                    'datetime' =>  $request->input('status_time'),
-                    'updated_datetime' =>  $request->input('status_time'),
-                ]);
+
+                $existingStatus = ShipwayOrderStatus::where('shipway_order_id', $orderId)
+                    ->where('status', $orderStatus)
+                    ->first();
+
+                if ($existingStatus) {
+                
+                    $existingStatus->update([
+                        'updated_datetime' =>  $request->input('status_time'),
+                        'updated_at' => now()
+                    ]);
+                } else {                
+                    ShipwayOrderStatus::create([
+                        'shipway_order_id' => $orderId,
+                        'status' => $orderStatus,
+                        'datetime' =>  $request->input('status_time'),
+                        'updated_datetime' =>  $request->input('status_time'),
+                    ]);
+                }
             }
             
         } else {
@@ -246,7 +255,7 @@ class ShipwayController extends Controller
                 's_zipcode' => $data['s_zipcode'] ?? null,
                 'tracking_number' => $data['tracking_number'] ?? null,
                 'shipment_status' => $data['shipment_status'] ?? null,
-                'shipment_status_name' => $data['shipment_status_name'] ?? null,
+                'shipment_status_name' => isset($data['shipment_status_name']) ? strtoupper(str_replace(' ', '_', $data['shipment_status_name'])) : null,
                 'order_date' => $orderDate,
             ]
         );

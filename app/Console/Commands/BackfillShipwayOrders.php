@@ -29,7 +29,7 @@ class BackfillShipwayOrders extends Command
     {
         // Define your date range here 
         $startDate = Carbon::create(2026, 1, 1); 
-        $endDate = Carbon::create(2026, 1, 29);
+        $endDate = Carbon::create(2026, 2, 9);
 
         $this->info("Dispatching Shipway jobs from {$startDate->toDateString()} to {$endDate->toDateString()} in 1-day chunks...");
 
