@@ -197,7 +197,6 @@ class ShipwayController extends Controller
                         'date_from' => $startDate,
                         'date_to' => $endDate,
                     ]);
-
                 if ($response->successful()) {
                     $data = $response->json();
 

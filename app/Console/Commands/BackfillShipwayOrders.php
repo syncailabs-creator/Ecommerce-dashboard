@@ -13,7 +13,7 @@ class BackfillShipwayOrders extends Command
      *
      * @var string
      */
-    protected $signature = 'app:backfill-shipway-orders';
+    protected $signature = 'app:backfill-shipway-orders {--sync : Run jobs synchronously instead of queuing}';
 
     /**
      * The console command description.
@@ -27,26 +27,52 @@ class BackfillShipwayOrders extends Command
      */
     public function handle()
     {
+        $startTime = microtime(true);
+        
         // Define your date range here 
-        $startDate = Carbon::create(2026, 1, 20); 
+        $startDate = Carbon::create(2026, 2, 10); 
         $endDate = Carbon::create(2026, 2, 10);
 
-        $this->info("Dispatching Shipway jobs from {$startDate->toDateString()} to {$endDate->toDateString()} in 1-day chunks...");
+        $sync = $this->option('sync');
+        
+        $this->info("Starting Shipway backfill from {$startDate->toDateString()} to {$endDate->toDateString()}");
+        $this->info("Mode: " . ($sync ? "Synchronous (immediate execution)" : "Queued (background processing)"));
+        $this->newLine();
 
         $current = $startDate->copy();
+        $totalDays = 0;
 
         while ($current->lte($endDate)) {
             $dateString = $current->format('Y-m-d');
+            $totalDays++;
             
-            // Dispatch job for the specific day
-            FetchShipwayOrdersJob::dispatch($dateString);
-            
-            $this->info("Dispatched Shipway job for date: {$dateString}");
+            if ($sync) {
+                // Run synchronously for immediate execution
+                $this->info("Processing date: {$dateString}...");
+                $job = new FetchShipwayOrdersJob($dateString);
+                $job->handle();
+                $this->info("✓ Completed: {$dateString}");
+            } else {
+                // Dispatch to queue
+                FetchShipwayOrdersJob::dispatch($dateString);
+                $this->info("✓ Queued: {$dateString}");
+            }
 
             $current->addDay();
         }
 
-        $this->info("All Shipway jobs dispatched successfully.");
-        $this->info("Run 'php artisan queue:work --stop-when-empty' or visit '/job-fire' to process them.");
+        $executionTime = round(microtime(true) - $startTime, 2);
+        
+        $this->newLine();
+        $this->info("Summary:");
+        $this->info("- Total days processed: {$totalDays}");
+        $this->info("- Execution time: {$executionTime} seconds");
+        
+        if (!$sync) {
+            $this->newLine();
+            $this->info("Jobs have been queued. Process them with:");
+            $this->info("  php artisan queue:work --stop-when-empty");
+            $this->info("  OR visit /job-fire");
+        }
     }
 }
