@@ -385,3 +385,21 @@ Reports
 4.1 Delivery Classification (Campaign)
 4.2 Delivery Classification (Adset)
 4.3 Delivery Classification (Ad)
+
+
+
+
+Schedule	Command	Action
+0 2 * * *	wget -q -O /dev/null https://automation.drveda.in/meta-ads/fetch-accounts	Delete
+0 1 * * *	wget -q -O /dev/null https://automation.drveda.in/meta-ads/fetch-previous-ads	Delete
+0 1 * * *	wget -q -O /dev/null https://automation.drveda.in/meta-ads/fetch-previous-adsets	Delete
+0 2 * * *	wget -q -O /dev/null https://automation.drveda.in/meta-ads/fetch-previous-campaigns	Delete
+0 * * * *	wget -q -O /dev/null https://automation.drveda.in/meta-ads/fetch-ads	Delete
+0 * * * *	wget -q -O /dev/null https://automation.drveda.in/meta-ads/fetch-adsets	Delete
+0 * * * *	wget -q -O /dev/null https://automation.drveda.in/meta-ads/fetch-campaigns	Delete
+*/15 * * * *	wget -q -O /dev/null https://automation.drveda.in/shipway/fetch-orders	Delete
+*/15 * * * *	wget -q -O /dev/null https://automation.drveda.in/shopify-orders/fetch-recent	Delete
+
+
+*/15 * * * *	wget -q -O /dev/null https://automation.drveda.in/job-fire
+

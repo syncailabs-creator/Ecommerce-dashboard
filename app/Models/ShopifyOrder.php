@@ -25,14 +25,24 @@ class ShopifyOrder extends Model
         return $this->belongsTo(MetaAdsCampaignMaster::class, 'utm_campaign', 'campaign_id');
     }
 
+    // public function metaAdSet()
+    // {
+    //     return $this->belongsTo(MetaAdsSetMaster::class, 'utm_term', 'adset_id');
+    // }
+
+    // public function metaAd()
+    // {
+    //     return $this->belongsTo(MetaAdsAdMaster::class, 'utm_content', 'ad_id');
+    // }
+    
     public function metaAdSet()
     {
-        return $this->belongsTo(MetaAdsSetMaster::class, 'utm_term', 'adset_id');
+        return $this->belongsTo(MetaAdsSetMaster::class, 'utm_content', 'adset_id');
     }
 
     public function metaAd()
     {
-        return $this->belongsTo(MetaAdsAdMaster::class, 'utm_content', 'ad_id');
+        return $this->belongsTo(MetaAdsAdMaster::class, 'utm_term', 'ad_id');
     }
 
 }
